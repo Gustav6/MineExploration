@@ -22,14 +22,6 @@ namespace MineExploration
 
         public void Damage(float damageAmount);
         public void Heal(float healAmount);
-        public void ApplyKnockBack(float strength, Vector2 direction)
-        {
-            if (!CanTakeKnockBack)
-            {
-                return;
-            }
-
-
-        }
+        public void ApplyKnockBack(float strength, Vector2 direction);
     }
 }

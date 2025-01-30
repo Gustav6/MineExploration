@@ -58,14 +58,12 @@ public enum FontIdentifier
 
 public enum TextureIdentifier
 {
-    Building,
-    Troop,
+    Player
 }
 
 public enum SpriteLayerIdentifier
 {
     Default,
-    Building,
-    Troop,
+    Player,
     Hitbox
 }

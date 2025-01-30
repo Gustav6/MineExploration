@@ -34,6 +34,7 @@ namespace MineExploration
             {
                 if (Library.gameObjects[i].IsDestroyed)
                 {
+                    Library.gameObjects[i].RunOnDestroy();
                     Library.gameObjects.RemoveAt(i);
                     continue;
                 }

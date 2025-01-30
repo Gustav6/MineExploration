@@ -10,13 +10,16 @@ namespace MineExploration
 {
     public abstract class GameObject : Transform, ISpriteRenderer
     {
-        public bool IsDestroyed { get; private set; }
+        #region Sprite renderer variables
         public Texture2D Texture { get; protected set; }
         public Vector2 Origin { get; private set; }
         public Color Color { get; set; } = Color.White;
         public Rectangle Source { get; private set; }
         public SpriteEffects SpriteEffects { get; private set; }
         public float SpriteLayer { get; protected set; } = TextureManager.SpriteLayers[SpriteLayerIdentifier.Default];
+        #endregion
+
+        public bool IsDestroyed { get; private set; }
 
         public virtual void Start()
         {
@@ -32,7 +35,6 @@ namespace MineExploration
         public virtual void RunOnDestroy() { }
         public void Destroy()
         {
-            RunOnDestroy();
             IsDestroyed = true;
         }
 
