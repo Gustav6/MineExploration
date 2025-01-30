@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "PZHEsOl3zt0=",
+  "dgSpecHash": "ETznXLPYrsk=",
   "success": true,
-  "projectFilePath": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\MineExploration.csproj",
+  "projectFilePath": "C:\\Users\\gusta\\Documents\\Github\\MineExploration\\Project\\MineExploration.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\gustav.ekstrom1\\.nuget\\packages\\monogame.content.builder.task\\3.8.1.303\\monogame.content.builder.task.3.8.1.303.nupkg.sha512",
-    "C:\\Users\\gustav.ekstrom1\\.nuget\\packages\\monogame.framework.desktopgl\\3.8.1.303\\monogame.framework.desktopgl.3.8.1.303.nupkg.sha512"
+    "C:\\Users\\gusta\\.nuget\\packages\\monogame.content.builder.task\\3.8.1.303\\monogame.content.builder.task.3.8.1.303.nupkg.sha512",
+    "C:\\Users\\gusta\\.nuget\\packages\\monogame.framework.desktopgl\\3.8.1.303\\monogame.framework.desktopgl.3.8.1.303.nupkg.sha512"
   ],
   "logs": []
 }

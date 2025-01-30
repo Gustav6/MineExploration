@@ -1,22 +1,26 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\",
+  "WorkspaceRootPath": "C:\\Users\\gusta\\Documents\\Github\\MineExploration\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{4B484C2B-EC91-4609-9204-F1B1FC6C78C1}|MineExploration\\MineExploration.csproj|c:\\users\\gustav.ekstrom1\\documents\\github\\mineexploration\\mineexploration\\game1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4B484C2B-EC91-4609-9204-F1B1FC6C78C1}|MineExploration\\MineExploration.csproj|solutionrelative:mineexploration\\game1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{670C7200-395B-45DE-BBFC-FD157FDFE7D6}|Project\\MineExploration.csproj|c:\\users\\gusta\\documents\\github\\mineexploration\\project\\game1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{670C7200-395B-45DE-BBFC-FD157FDFE7D6}|Project\\MineExploration.csproj|solutionrelative:project\\game1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4B484C2B-EC91-4609-9204-F1B1FC6C78C1}|MineExploration\\MineExploration.csproj|c:\\users\\gustav.ekstrom1\\documents\\github\\mineexploration\\mineexploration\\scripts\\base managers\\gamemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4B484C2B-EC91-4609-9204-F1B1FC6C78C1}|MineExploration\\MineExploration.csproj|solutionrelative:mineexploration\\scripts\\base managers\\gamemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{670C7200-395B-45DE-BBFC-FD157FDFE7D6}|Project\\MineExploration.csproj|c:\\users\\gusta\\documents\\github\\mineexploration\\project\\scripts\\save system\\savesystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{670C7200-395B-45DE-BBFC-FD157FDFE7D6}|Project\\MineExploration.csproj|solutionrelative:project\\scripts\\save system\\savesystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4B484C2B-EC91-4609-9204-F1B1FC6C78C1}|MineExploration\\MineExploration.csproj|c:\\users\\gustav.ekstrom1\\documents\\github\\mineexploration\\mineexploration\\scripts\\transition system\\transitionsystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4B484C2B-EC91-4609-9204-F1B1FC6C78C1}|MineExploration\\MineExploration.csproj|solutionrelative:mineexploration\\scripts\\transition system\\transitionsystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{670C7200-395B-45DE-BBFC-FD157FDFE7D6}|Project\\MineExploration.csproj|c:\\users\\gusta\\documents\\github\\mineexploration\\project\\scripts\\save system\\data.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{670C7200-395B-45DE-BBFC-FD157FDFE7D6}|Project\\MineExploration.csproj|solutionrelative:project\\scripts\\save system\\data.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4B484C2B-EC91-4609-9204-F1B1FC6C78C1}|MineExploration\\MineExploration.csproj|c:\\users\\gustav.ekstrom1\\documents\\github\\mineexploration\\mineexploration\\mineexploration.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
-      "RelativeMoniker": "D:0:0:{4B484C2B-EC91-4609-9204-F1B1FC6C78C1}|MineExploration\\MineExploration.csproj|solutionrelative:mineexploration\\mineexploration.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+      "AbsoluteMoniker": "D:0:0:{670C7200-395B-45DE-BBFC-FD157FDFE7D6}|Project\\MineExploration.csproj|c:\\users\\gusta\\documents\\github\\mineexploration\\project\\bin\\debug\\net8.0\\data.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{670C7200-395B-45DE-BBFC-FD157FDFE7D6}|Project\\MineExploration.csproj|solutionrelative:project\\bin\\debug\\net8.0\\data.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{670C7200-395B-45DE-BBFC-FD157FDFE7D6}|Project\\MineExploration.csproj|c:\\users\\gusta\\documents\\github\\mineexploration\\project\\scripts\\transition system\\transitionsystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{670C7200-395B-45DE-BBFC-FD157FDFE7D6}|Project\\MineExploration.csproj|solutionrelative:project\\scripts\\transition system\\transitionsystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,61 +30,111 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 14,
           "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
             },
             {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "GameManager.cs",
-              "DocumentMoniker": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\Scripts\\Base Managers\\GameManager.cs",
-              "RelativeDocumentMoniker": "MineExploration\\Scripts\\Base Managers\\GameManager.cs",
-              "ToolTip": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\Scripts\\Base Managers\\GameManager.cs",
-              "RelativeToolTip": "MineExploration\\Scripts\\Base Managers\\GameManager.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAoAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-30T14:21:29.454Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{13b12e3e-c1b4-4539-9371-4fe9a0d523fc}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:132:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{13b12e3e-c1b4-4539-9371-4fe9a0d523fc}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "MineExploration",
-              "DocumentMoniker": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\MineExploration.csproj",
-              "RelativeDocumentMoniker": "MineExploration\\MineExploration.csproj",
-              "ToolTip": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\MineExploration.csproj",
-              "RelativeToolTip": "MineExploration\\MineExploration.csproj",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-01-30T14:18:13.042Z",
+              "Title": "data.json",
+              "DocumentMoniker": "C:\\Users\\gusta\\Documents\\Github\\MineExploration\\Project\\bin\\Debug\\net8.0\\data.json",
+              "RelativeDocumentMoniker": "Project\\bin\\Debug\\net8.0\\data.json",
+              "ToolTip": "C:\\Users\\gusta\\Documents\\Github\\MineExploration\\Project\\bin\\Debug\\net8.0\\data.json",
+              "RelativeToolTip": "Project\\bin\\Debug\\net8.0\\data.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAA9AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-01-30T22:43:10.486Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "TransitionSystem.cs",
+              "DocumentMoniker": "C:\\Users\\gusta\\Documents\\Github\\MineExploration\\Project\\Scripts\\Transition System\\TransitionSystem.cs",
+              "RelativeDocumentMoniker": "Project\\Scripts\\Transition System\\TransitionSystem.cs",
+              "ToolTip": "C:\\Users\\gusta\\Documents\\Github\\MineExploration\\Project\\Scripts\\Transition System\\TransitionSystem.cs",
+              "RelativeToolTip": "Project\\Scripts\\Transition System\\TransitionSystem.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-30T21:50:06.344Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "SaveSystem.cs",
+              "DocumentMoniker": "C:\\Users\\gusta\\Documents\\Github\\MineExploration\\Project\\Scripts\\Save System\\SaveSystem.cs",
+              "RelativeDocumentMoniker": "Project\\Scripts\\Save System\\SaveSystem.cs",
+              "ToolTip": "C:\\Users\\gusta\\Documents\\Github\\MineExploration\\Project\\Scripts\\Save System\\SaveSystem.cs",
+              "RelativeToolTip": "Project\\Scripts\\Save System\\SaveSystem.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-30T21:22:48.827Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Data.cs",
+              "DocumentMoniker": "C:\\Users\\gusta\\Documents\\Github\\MineExploration\\Project\\Scripts\\Save System\\Data.cs",
+              "RelativeDocumentMoniker": "Project\\Scripts\\Save System\\Data.cs",
+              "ToolTip": "C:\\Users\\gusta\\Documents\\Github\\MineExploration\\Project\\Scripts\\Save System\\Data.cs",
+              "RelativeToolTip": "Project\\Scripts\\Save System\\Data.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-30T21:22:47.178Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Game1.cs",
-              "DocumentMoniker": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\Game1.cs",
-              "RelativeDocumentMoniker": "MineExploration\\Game1.cs",
-              "ToolTip": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\Game1.cs",
-              "RelativeToolTip": "MineExploration\\Game1.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAABKAAAAAAAAAA==",
+              "DocumentMoniker": "C:\\Users\\gusta\\Documents\\Github\\MineExploration\\Project\\Game1.cs",
+              "RelativeDocumentMoniker": "Project\\Game1.cs",
+              "ToolTip": "C:\\Users\\gusta\\Documents\\Github\\MineExploration\\Project\\Game1.cs",
+              "RelativeToolTip": "Project\\Game1.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-30T14:17:15.621Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "TransitionSystem.cs",
-              "DocumentMoniker": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\Scripts\\Transition System\\TransitionSystem.cs",
-              "RelativeDocumentMoniker": "MineExploration\\Scripts\\Transition System\\TransitionSystem.cs",
-              "ToolTip": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\Scripts\\Transition System\\TransitionSystem.cs",
-              "RelativeToolTip": "MineExploration\\Scripts\\Transition System\\TransitionSystem.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAZAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-30T14:13:55.925Z",
+              "WhenOpened": "2025-01-30T21:19:36.517Z",
               "EditorCaption": ""
             }
           ]
