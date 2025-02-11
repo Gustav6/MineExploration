@@ -11,19 +11,33 @@ namespace MineExploration
 {
     public static class TextureManager
     {
+        public static Dictionary<TileType, Texture2D> TileTextures { get; private set; }
         public static Dictionary<TextureIdentifier, Texture2D> Textures { get; private set; }
         public static Dictionary<FontIdentifier, SpriteFont> Fonts { get; private set; }
         public static Dictionary<SpriteLayerIdentifier, float> SpriteLayers { get; private set; }
 
         public static void LoadTextures(ContentManager content)
         {
-            /*
             Textures = new Dictionary<TextureIdentifier, Texture2D>()
             {
-                { TextureIdentifier.Building, content.Load<Texture2D>("GameObjects/Buildings/stronghold") },
-                { TextureIdentifier.Troop, content.Load<Texture2D>("GameObjects/Troops/archer") }
+                { TextureIdentifier.Player, CreateTexture(64, 128, paint => Color.LawnGreen) },
+                { TextureIdentifier.Enemy, CreateTexture(64, 128, paint => Color.Red) },
             };
 
+            TileTextures = new Dictionary<TileType, Texture2D>()
+            {
+                { TileType.Traversable, CreateTexture(32, 32, paint => Color.White) },
+                { TileType.UnTraversable, CreateTexture(32, 32, paint => Color.Black) }
+            };
+
+            SpriteLayers = new Dictionary<SpriteLayerIdentifier, float>()
+            {
+                { SpriteLayerIdentifier.Default, 0.5f },
+                { SpriteLayerIdentifier.Player, 0.6f },
+                { SpriteLayerIdentifier.Hitbox, 0.7f }
+            };
+
+            /*
             Fonts = new Dictionary<FontIdentifier, SpriteFont>()
             {
                 { FontIdentifier.DamageNumber, content.Load<SpriteFont>("Fonts/FontTest") },
@@ -58,7 +72,8 @@ public enum FontIdentifier
 
 public enum TextureIdentifier
 {
-    Player
+    Player,
+    Enemy
 }
 
 public enum SpriteLayerIdentifier

@@ -31,7 +31,7 @@ namespace MineExploration
 
         public override void Start()
         {
-            movementSpeed = PlayerStats.BaseMovmentSpeed;
+            movementSpeed = PlayerStats.BaseMovementSpeed;
             MaxHealth = PlayerStats.MaxHealth;
             Health = MaxHealth;
 

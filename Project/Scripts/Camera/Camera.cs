@@ -11,7 +11,6 @@ namespace MineExploration
     public class Camera
     {
         public Matrix Transform { get; private set; }
-        private Viewport viewport;
         private Vector2 center;
 
         private readonly float maximumZoom = 3;
@@ -20,7 +19,7 @@ namespace MineExploration
         public float X { get { return center.X; } }
         public float Y { get { return center.Y; } }
 
-        public GameObject target;
+        public Transform Target { get; private set; }
 
         private float zoom;
         public float Zoom
@@ -29,17 +28,21 @@ namespace MineExploration
 
             set
             {
-                zoom = value;
-
                 // Cap maximum and minimum zoom
-                if (zoom < minimumZoom)
+                if (value <= minimumZoom)
                 {
                     zoom = minimumZoom;
                 }
-                else if (zoom > maximumZoom)
+                else if (value >= maximumZoom)
                 {
                     zoom = maximumZoom;
                 }
+                else
+                {
+                    zoom = value;
+                }
+
+                UpdateCamera();
             }
         }
 
@@ -50,42 +53,70 @@ namespace MineExploration
 
             set
             {
-                rotation = value;
-
                 // Set rotation to 0 when camera has rotated 360°
-                if (rotation > Math.PI * 2 || rotation < -Math.PI * 2)
+                if (value >= Math.PI * 2 || value <= -Math.PI * 2)
                 {
                     rotation = 0;
                 }
+                else
+                {
+                    rotation = value;
+                }
+
+                UpdateCamera();
             }
         }
 
-        public Camera(Viewport viewport, GameObject follow = null)
+        public Camera(Transform target = null)
         {
-            this.viewport = viewport;
-            target = follow;
+            Target = target;
 
             Zoom = 1;
             Rotation = 0;
+
+            UpdateCamera();
+
+            Target.OnPositionChanged += Target_OnPositionChanged;
+            WindowManager.OnWindowSizeChange += WindowManager_OnWindowSizeChange;
         }
 
-        public void Update()
+        private void WindowManager_OnWindowSizeChange(object sender, EventArgs e)
         {
-            if (target != null)
+            UpdateCamera();
+        }
+
+        private void Target_OnPositionChanged(object sender, EventArgs e)
+        {
+            if (sender is Transform t)
             {
-                center = new Vector2(target.Position.X, target.Position.Y);
+                Target = t;
+                UpdateCamera();
+            }
+        }
+
+        private void UpdateCamera()
+        {
+            if (Target != null)
+            {
+                center = Target.Position;
             }
 
             Transform =
                 Matrix.CreateTranslation(new Vector3(-center.X, -center.Y, 0)) *
                 Matrix.CreateRotationZ(Rotation) *
                 Matrix.CreateScale(Zoom, Zoom, 1) *
-                Matrix.CreateTranslation(new Vector3(viewport.Width / 2, viewport.Height / 2, 0));
+                Matrix.CreateTranslation(new Vector3(WindowManager.WindowWidth / 2, WindowManager.WindowHeight / 2, 0));
+        }
+
+        public void SetTarget(Transform newTarget)
+        {
+            Target = newTarget;
+            UpdateCamera();
         }
 
         public void ScreenShake(float duration, float intensity)
         {
-
+            Rotation = 0;
         }
     }
 }

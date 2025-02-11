@@ -13,7 +13,7 @@ namespace MineExploration
     {
         public const string PATH = "data.json";
 
-        public static void Save(Data data)
+        public static void Save(SaveData data)
         {
             string serializedData = JsonSerializer.Serialize(data);
 
@@ -23,11 +23,9 @@ namespace MineExploration
             File.WriteAllText(PATH, serializedData);
         }
 
-        public static Data Load()
+        public static SaveData Load()
         {
-            var deserializedData = File.ReadAllText(PATH);
-
-            return JsonSerializer.Deserialize<Data>(deserializedData);
+            return JsonSerializer.Deserialize<SaveData>(File.ReadAllText(PATH));
         }
     }
 }

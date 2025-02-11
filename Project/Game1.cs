@@ -18,9 +18,9 @@ namespace MineExploration
 
         protected override void Initialize()
         {
-            GameManager.Initialize();
-
             base.Initialize();
+
+            GameManager.Initialize();
         }
 
         protected override void LoadContent()

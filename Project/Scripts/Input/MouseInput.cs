@@ -19,6 +19,12 @@ namespace MineExploration
             CurrentState = Mouse.GetState();
         }
 
+        public static Vector2 MouseInWorld()
+        {
+            Matrix inverseTransform = Matrix.Invert(Library.MainCamera.Transform);
+            return Vector2.Transform(new Vector2(CurrentState.X, CurrentState.Y), inverseTransform);
+        }
+
         public static Rectangle GetBounds(bool useCurrentState)
         {
             if (useCurrentState)
@@ -41,8 +47,28 @@ namespace MineExploration
             return false;
         }
 
-        public static bool HasBeenPressed(ButtonState currentButtonState, ButtonState prevButtonState)
+        public static bool HasBeenPressed(MouseKey mouseKey)
         {
+            ButtonState currentButtonState, prevButtonState;
+
+            switch (mouseKey)
+            {
+                case MouseKey.Left:
+                    currentButtonState = CurrentState.LeftButton;
+                    prevButtonState = PreviousState.LeftButton;
+                    break;
+                case MouseKey.Middle:
+                    currentButtonState = CurrentState.MiddleButton;
+                    prevButtonState = PreviousState.MiddleButton;
+                    break;
+                case MouseKey.Right:
+                    currentButtonState = CurrentState.RightButton;
+                    prevButtonState = PreviousState.RightButton;
+                    break;
+                default:
+                    return false;
+            }
+
             if (currentButtonState == ButtonState.Pressed && prevButtonState == ButtonState.Released)
             {
                 return true;
@@ -50,5 +76,12 @@ namespace MineExploration
 
             return false;
         }
+    }
+
+    public enum MouseKey
+    {
+        Left,
+        Middle,
+        Right,
     }
 }

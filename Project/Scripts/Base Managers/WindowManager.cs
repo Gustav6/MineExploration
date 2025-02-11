@@ -8,8 +8,15 @@ namespace MineExploration
 {
     public static class WindowManager
     {
+        public static event EventHandler OnWindowSizeChange;
+
         public static int WindowWidth { get; private set; }
         public static int WindowHeight { get; private set; }
+
+        public static readonly int defaultWindowWidth = 1920;
+        public static readonly int defaultWindowHeight = 1080;
+
+        public static int WindowScaling { get; private set; }
 
         public static void ChangeSize(int width, int height)
         {
@@ -20,6 +27,10 @@ namespace MineExploration
             Game1.Graphics.PreferredBackBufferHeight = WindowHeight;
 
             Game1.Graphics.ApplyChanges();
+
+            WindowScaling = WindowWidth / defaultWindowWidth;
+
+            OnWindowSizeChange?.Invoke(null, EventArgs.Empty);
         }
 
         public static void Fullscreen(bool status)
