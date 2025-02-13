@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 
 namespace MineExploration
 {
     public static class WindowManager
     {
         public static event EventHandler OnWindowSizeChange;
-
+        public static Vector2 WindowSize { get; private set; }
         public static int WindowWidth { get; private set; }
         public static int WindowHeight { get; private set; }
 
@@ -22,6 +23,7 @@ namespace MineExploration
         {
             WindowHeight = height;
             WindowWidth = width;
+            WindowSize = new Vector2(WindowWidth, WindowHeight);
 
             Game1.Graphics.PreferredBackBufferWidth = WindowWidth;
             Game1.Graphics.PreferredBackBufferHeight = WindowHeight;

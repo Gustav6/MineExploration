@@ -16,9 +16,7 @@ namespace MineExploration
         private readonly float maximumZoom = 3;
         private readonly float minimumZoom = 0.05f;
 
-        public float X { get { return center.X; } }
-        public float Y { get { return center.Y; } }
-
+        public Vector2 Position { get { return center; } }
         public Transform Target { get; private set; }
 
         private float zoom;
@@ -91,6 +89,7 @@ namespace MineExploration
             {
                 Target = t;
                 UpdateCamera();
+                MapManager.CheckForNewActiveChunks();
             }
         }
 
@@ -106,6 +105,12 @@ namespace MineExploration
                 Matrix.CreateRotationZ(Rotation) *
                 Matrix.CreateScale(Zoom, Zoom, 1) *
                 Matrix.CreateTranslation(new Vector3(WindowManager.WindowWidth / 2, WindowManager.WindowHeight / 2, 0));
+        }
+
+        public static Vector2 PositionInWorld(Vector2 position)
+        {
+            Matrix inverseTransform = Matrix.Invert(Library.MainCamera.Transform);
+            return Vector2.Transform(new Vector2(position.X, position.Y), inverseTransform);
         }
 
         public void SetTarget(Transform newTarget)

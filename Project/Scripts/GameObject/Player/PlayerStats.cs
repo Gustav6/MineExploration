@@ -8,7 +8,7 @@ namespace MineExploration
 {
     public class PlayerStats
     {
-        public static float BaseMovementSpeed { get; set; } = 150;
+        public static float BaseMovementSpeed { get; set; } = 250;
         public static float MaxHealth { get; set; } = 200;
     }
 }

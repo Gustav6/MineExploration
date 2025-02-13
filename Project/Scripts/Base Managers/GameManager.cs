@@ -22,13 +22,7 @@ namespace MineExploration
 
             //WindowManager.Fullscreen(true);
 
-            for (int x = -3; x < 3; x++)
-            {
-                for (int y = 0; y < 1; y++)
-                {
-                    MapManager.LoadAndSetChunkTiles(new Point(x, y), TileType.Traversable);
-                }
-            }
+            MapManager.Test();
         }
 
         public static void LoadContent(ContentManager content)
@@ -59,10 +53,12 @@ namespace MineExploration
                 }
             }
 
-            if (MouseInput.HasBeenPressed(MouseKey.Left))
+            if (MouseInput.HasBeenPressed(MouseKeys.Left))
             {
-                Point Chunk = (Vector2.Floor(MouseInput.MouseInWorld() / MapManager.tileSize / MapManager.chunkSize)).ToPoint();
-                Vector2 tilePosition = MouseInput.MouseInWorld() / MapManager.tileSize;
+                // Code below will set the tile that the mouse clicks on to null
+
+                Point Chunk = Vector2.Floor(Camera.PositionInWorld(MouseInput.CurrentState.Position.ToVector2()) / MapManager.tileSize / MapManager.chunkSize).ToPoint();
+                Vector2 tilePosition = Camera.PositionInWorld(MouseInput.CurrentState.Position.ToVector2()) / MapManager.tileSize;
                 Point tilePositionInChunk = (tilePosition - Chunk.ToVector2() * MapManager.chunkSize).ToPoint();
 
                 MapManager.SetTileInChunk(Chunk, tilePositionInChunk, null);

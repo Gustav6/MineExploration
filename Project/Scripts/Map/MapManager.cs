@@ -5,25 +5,91 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MineExploration
 {
-    static class MapManager
+    public static class MapManager
     {
         public static HashSet<Point> ActiveChunks { get; private set; } = [];
         public static Dictionary<Point, Chunk> ChunkPositions { get; set; } = [];
         public const int chunkSize = 16, tileSize = 32;
 
-        public static void Update()
-        {
+        private static Point prevTopLeftCameraChunk, prevBottomRightCameraChunk;
+        public static Vector2 CameraExtendViewDistance { get { return WindowManager.WindowSize * 0.2f; } }
 
+        public static void CheckForNewActiveChunks()
+        {
+            Point topLeftCameraPosition = Vector2.Floor((Library.MainCamera.Position - (WindowManager.WindowSize * 0.5f) - CameraExtendViewDistance) / tileSize / chunkSize).ToPoint();
+            Point bottomRightCameraPosition = Vector2.Floor((Library.MainCamera.Position + (WindowManager.WindowSize * 0.5f) + CameraExtendViewDistance) / tileSize / chunkSize).ToPoint();
+            
+            if (topLeftCameraPosition != prevTopLeftCameraChunk || bottomRightCameraPosition != prevBottomRightCameraChunk)
+            {
+                prevTopLeftCameraChunk = topLeftCameraPosition;
+                prevBottomRightCameraChunk = bottomRightCameraPosition;
+                
+                UpdateActiveChunks(topLeftCameraPosition, bottomRightCameraPosition);
+            }
         }
 
-        public static void LoadAndSetChunkTiles(Point chunk, TileType type)
+        private static void UpdateActiveChunks(Point topLeftCameraPosition, Point bottomRightCameraPosition)
         {
-            SetTilesInChunk(chunk, type);
-            LoadChunk(chunk);
+            ActiveChunks.Clear();
+            
+            for (int x = topLeftCameraPosition.X; x <= bottomRightCameraPosition.X; x++)
+            {
+                for (int y = topLeftCameraPosition.Y; y <= bottomRightCameraPosition.Y; y++)
+                {
+                    Point chunkPosition = new(x, y);
+                    
+                    if (ChunkPositions.ContainsKey(chunkPosition))
+                    {
+                        LoadChunk(chunkPosition);
+                    }
+                }
+            }
+        }
+
+        public static void Test()
+        {
+            List<Point> chunksTest = [];
+
+            for (int x = -15; x < 15; x++)
+            {
+                for (int y = -15; y < 15; y++)
+                {
+                    chunksTest.Add(new Point(x, y));
+                }
+            }
+
+            TileType[] tileTypesTest = new TileType[chunksTest.Count];
+            Array.Fill(tileTypesTest, TileType.Traversable);
+
+            Thread thread = new(() =>
+            {
+                SetChunks([.. chunksTest], tileTypesTest);
+            })
+            {
+                IsBackground = true
+            };
+
+            thread.Start();
+        }
+
+        private static void SetChunks(Point[] chunks, TileType[] tileTypes)
+        {
+            bool settingChunks = true;
+
+            while (settingChunks)
+            {
+                for (int i = 0; i < chunks.Length; i++)
+                {
+                    SetTilesInChunk(chunks[i], tileTypes[i]);
+                }
+
+                settingChunks = false;
+            }
         }
 
         /// <summary>

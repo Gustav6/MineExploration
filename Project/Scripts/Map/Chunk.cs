@@ -36,7 +36,7 @@ namespace MineExploration
 
             for (int i = 0; i < Tiles.Length; i++)
             {
-                tempPosition = (new Vector2(i % MapManager.chunkSize, i / MapManager.chunkSize) * MapManager.tileSize);
+                tempPosition = new Vector2(i % MapManager.chunkSize, i / MapManager.chunkSize) * MapManager.tileSize;
                 tempPosition += position.ToVector2() * MapManager.chunkSize * MapManager.tileSize;
                 tile = new(tempPosition, type);
 
