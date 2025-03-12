@@ -19,6 +19,9 @@ namespace MineExploration
         public float SpriteLayer { get; protected set; } = TextureManager.SpriteLayers[SpriteLayerIdentifier.Default];
         #endregion
 
+        public int Id { get; set; }
+        public GameObjectType Type { get; protected set; }
+
         public bool IsDestroyed { get; private set; }
 
         public virtual void Start()
@@ -43,4 +46,10 @@ namespace MineExploration
             spriteBatch.Draw(Texture, Position, Source, Color, Rotation, Origin, Scale, SpriteEffects, SpriteLayer);
         }
     }
+}
+
+public enum GameObjectType
+{
+    Player,
+    Enemy,
 }

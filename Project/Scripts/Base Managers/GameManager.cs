@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,10 +16,11 @@ namespace MineExploration
     {
         public static void Initialize()
         {
-            Player player = (Player)Library.CreateGameObject(new Player(Vector2.Zero));
-            Library.MainCamera = new Camera(player);
+            Library.MainCamera = new Camera();
 
-            WindowManager.ChangeSize(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height);
+            WindowManager.ChangeSize(800, 480);
+
+            ServerHandler.TryConnect("127.0.0.1", 13000, 1000);
 
             //WindowManager.Fullscreen(true);
 
@@ -64,6 +66,7 @@ namespace MineExploration
                 MapManager.SetTileInChunk(Chunk, tilePositionInChunk, null);
             }
 
+
             for (int i = Library.gameObjects.Count - 1; i >= 0; i--)
             {
                 if (Library.gameObjects[i].IsDestroyed)
@@ -87,6 +90,18 @@ namespace MineExploration
             {
                 Library.gameObjects[i].Draw(spriteBatch);
             }
+
+            for (int i = 0; i < Library.serverGameObjects.Keys.Count; i++)
+            {
+                Library.serverGameObjects.ElementAt(i).Value.Draw(spriteBatch);
+            }
+
+            spriteBatch.End();
+
+            spriteBatch.Begin();
+
+            spriteBatch.DrawString(TextureManager.Fonts[FontIdentifier.Text], "Local: " + Library.gameObjects.Count, Vector2.Zero, Color.Green, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, TextureManager.SpriteLayers[SpriteLayerIdentifier.UI]);
+            spriteBatch.DrawString(TextureManager.Fonts[FontIdentifier.Text], "Server: " + Library.serverGameObjects.Keys.Count, new Vector2(0, 50), Color.Green, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, TextureManager.SpriteLayers[SpriteLayerIdentifier.UI]);
 
             spriteBatch.End();
         }

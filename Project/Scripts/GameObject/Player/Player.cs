@@ -10,6 +10,8 @@ namespace MineExploration
 {
     public class Player : Moveable, IDamageable
     {
+        private Vector2 spawnPosition;
+
         #region IDamageable variables
         public float Health { get; set; }
         public float MaxHealth { get; set; }
@@ -23,14 +25,17 @@ namespace MineExploration
 
         public Player(Vector2 position)
         {
-            SetPosition(position);
+            spawnPosition = position;
 
             Texture = TextureManager.Textures[TextureIdentifier.Player];
             SpriteLayer = TextureManager.SpriteLayers[SpriteLayerIdentifier.Player];
+            Type = GameObjectType.Player;
         }
 
         public override void Start()
         {
+            SetPosition(spawnPosition);
+
             movementSpeed = PlayerStats.BaseMovementSpeed;
             MaxHealth = PlayerStats.MaxHealth;
             Health = MaxHealth;
@@ -41,6 +46,11 @@ namespace MineExploration
         public override void Update(GameTime gameTime)
         {
             MoveDirection = new Vector2(KeyboardInput.Horizontal(), KeyboardInput.Vertical());
+
+            if (MoveDirection != Vector2.Zero)
+            {
+                ServerHandler.SendMessage(Id + ":" + (int)Type + ":" + Position.X + ":" + Position.Y);
+            }
 
             base.Update(gameTime);
         }

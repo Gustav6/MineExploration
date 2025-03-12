@@ -34,16 +34,15 @@ namespace MineExploration
             {
                 { SpriteLayerIdentifier.Default, 0.5f },
                 { SpriteLayerIdentifier.Player, 0.6f },
-                { SpriteLayerIdentifier.Hitbox, 0.7f }
+                { SpriteLayerIdentifier.Hitbox, 0.7f },
+                { SpriteLayerIdentifier.UI, 0.8f }
             };
 
-            /*
             Fonts = new Dictionary<FontIdentifier, SpriteFont>()
             {
-                { FontIdentifier.DamageNumber, content.Load<SpriteFont>("Fonts/FontTest") },
-                { FontIdentifier.Text, content.Load<SpriteFont>("Fonts/FontTest") }
+                //{ FontIdentifier.DamageNumber, content.Load<SpriteFont>("Fonts/FontTest") },
+                { FontIdentifier.Text, content.Load<SpriteFont>("Font") }
             };
-            */
         }
 
         private static Texture2D CreateTexture(int width, int height, Func<int, Color> paint)
@@ -80,5 +79,6 @@ public enum SpriteLayerIdentifier
 {
     Default,
     Player,
-    Hitbox
+    Hitbox,
+    UI
 }

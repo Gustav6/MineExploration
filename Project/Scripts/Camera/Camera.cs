@@ -74,7 +74,10 @@ namespace MineExploration
 
             UpdateCamera();
 
-            Target.OnPositionChanged += Target_OnPositionChanged;
+            if (Target != null)
+            {
+                Target.OnPositionChanged += Target_OnPositionChanged;
+            }
             WindowManager.OnWindowSizeChange += WindowManager_OnWindowSizeChange;
         }
 
@@ -116,6 +119,8 @@ namespace MineExploration
         public void SetTarget(Transform newTarget)
         {
             Target = newTarget;
+            Target.OnPositionChanged -= Target_OnPositionChanged;
+            Target.OnPositionChanged += Target_OnPositionChanged;
             UpdateCamera();
         }
 
