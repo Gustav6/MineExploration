@@ -10,14 +10,14 @@ namespace MineExploration
     {
         public static Camera MainCamera { get; set; }
 
-        public static List<GameObject> gameObjects = [];
+        public static Player playerInstance;
+
+        public static List<GameObject> localGameObjects = [];
         public static Dictionary<int, GameObject> serverGameObjects = [];
 
-        public static async Task<GameObject> CreateLocalGameObject(GameObject gameObject)
+        public static GameObject CreateLocalGameObject(GameObject gameObject)
         {
-            gameObjects.Add(gameObject);
-
-            await FetchNewGameObjectID(gameObject);
+            localGameObjects.Add(gameObject);
 
             gameObject.Start();
 
@@ -30,7 +30,7 @@ namespace MineExploration
             {
                 if (await FetchNewGameObjectID(gameObject))
                 {
-                    serverGameObjects.Add(gameObject.Id, gameObject);
+                    serverGameObjects.Add(gameObject.ServerId, gameObject);
 
                     gameObject.Start();
 
@@ -49,17 +49,17 @@ namespace MineExploration
             return null;
         }
 
-        private static async Task<bool> FetchNewGameObjectID(GameObject gameObject)
+        public static async Task<bool> FetchNewGameObjectID(GameObject gameObject)
         {
-            int newId = await ServerHandler.RequestIdFromServer();
+            int Id = await ServerHandler.RequestIdFromServer(gameObject);
 
-            if (newId == -1)
+            if (Id == -1)
             {
                 Console.WriteLine("Failed to get an ID from the server.");
                 return false;
             }
 
-            gameObject.Id = newId;
+            gameObject.ServerId = Id;
 
             return true;
         }

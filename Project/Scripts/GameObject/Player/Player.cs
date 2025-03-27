@@ -49,10 +49,28 @@ namespace MineExploration
 
             if (MoveDirection != Vector2.Zero)
             {
-                ServerHandler.SendMessage(Id + ":" + (int)Type + ":" + Position.X + ":" + Position.Y);
+                ServerHandler.SendMessage("BROADCAST" + ":" + ServerId + ":" + Position.X + ":" + Position.Y);
+                //ServerHandler.SendMessage(ServerId + ":" + (int)Type + ":" + Position.X + ":" + Position.Y);
             }
 
             base.Update(gameTime);
+        }
+
+        public override async Task SendToServerOnConnect()
+        {
+            await base.SendToServerOnConnect();
+
+            // Game object has not recived a server id yet
+            if (ServerId == -1)
+            {
+                // Could not fetch a new server id
+                if (!await Library.FetchNewGameObjectID(this))
+                {
+                    Destroy();
+                }
+            }
+
+            ServerHandler.SendMessage("BROADCAST" + ":" + ServerId + ":" + Position.X + ":" + Position.Y);
         }
 
         #region IDamageable related methods

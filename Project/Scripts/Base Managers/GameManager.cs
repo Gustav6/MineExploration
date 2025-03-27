@@ -22,6 +22,9 @@ namespace MineExploration
 
             ServerHandler.TryConnect("127.0.0.1", 13000, 1000);
 
+            Library.playerInstance = (Player)Library.CreateLocalGameObject(new Player(Vector2.Zero));
+            Library.MainCamera.SetTarget(Library.playerInstance);
+
             //WindowManager.Fullscreen(true);
 
             MapManager.Test();
@@ -67,16 +70,16 @@ namespace MineExploration
             }
 
 
-            for (int i = Library.gameObjects.Count - 1; i >= 0; i--)
+            for (int i = Library.localGameObjects.Count - 1; i >= 0; i--)
             {
-                if (Library.gameObjects[i].IsDestroyed)
+                if (Library.localGameObjects[i].IsDestroyed)
                 {
-                    Library.gameObjects[i].RunOnDestroy();
-                    Library.gameObjects.RemoveAt(i);
+                    Library.localGameObjects[i].RunOnDestroy();
+                    Library.localGameObjects.RemoveAt(i);
                     continue;
                 }
 
-                Library.gameObjects[i].Update(gameTime);
+                Library.localGameObjects[i].Update(gameTime);
             }
         }
 
@@ -86,9 +89,9 @@ namespace MineExploration
 
             MapManager.DrawActiveChunks(spriteBatch);
 
-            for (int i = 0; i < Library.gameObjects.Count; i++)
+            for (int i = 0; i < Library.localGameObjects.Count; i++)
             {
-                Library.gameObjects[i].Draw(spriteBatch);
+                Library.localGameObjects[i].Draw(spriteBatch);
             }
 
             for (int i = 0; i < Library.serverGameObjects.Keys.Count; i++)
@@ -100,7 +103,7 @@ namespace MineExploration
 
             spriteBatch.Begin();
 
-            spriteBatch.DrawString(TextureManager.Fonts[FontIdentifier.Text], "Local: " + Library.gameObjects.Count, Vector2.Zero, Color.Green, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, TextureManager.SpriteLayers[SpriteLayerIdentifier.UI]);
+            spriteBatch.DrawString(TextureManager.Fonts[FontIdentifier.Text], "Local: " + Library.localGameObjects.Count, Vector2.Zero, Color.Green, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, TextureManager.SpriteLayers[SpriteLayerIdentifier.UI]);
             spriteBatch.DrawString(TextureManager.Fonts[FontIdentifier.Text], "Server: " + Library.serverGameObjects.Keys.Count, new Vector2(0, 50), Color.Green, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, TextureManager.SpriteLayers[SpriteLayerIdentifier.UI]);
 
             spriteBatch.End();

@@ -102,7 +102,7 @@ namespace TCPServer
                 stream.FlushAsync();
             }
 
-            Console.WriteLine("Sent: " + message + " to client: " + clientInfo.ClientId);
+            Console.WriteLine("[SERVER]" + " Sent: " + message + " to client: " + clientInfo.ClientId);
         }
     }
 

@@ -16,6 +16,8 @@ namespace MineExploration
     {
         private static NetworkStream stream;
         private static TcpClient client;
+        public static event EventHandler OnServerConnect;
+        public static bool ConnectedToServer { get; private set; } = false;
 
         /// <summary>
         /// Tries to connect to the specified TCP server within a given timeout.
@@ -29,7 +31,7 @@ namespace MineExploration
         {
             if (client != null)
             {
-                Disconnect();
+                CloseConnection();
             }
 
             client = new TcpClient();
@@ -40,35 +42,39 @@ namespace MineExploration
 
                 // Wait for the connection or timeout
                 bool success = asyncResult.AsyncWaitHandle.WaitOne(TimeSpan.FromMilliseconds(timeoutMs));
-                if (!success)
+
+                ConnectedToServer = success;
+
+                if (!ConnectedToServer)
                 {
                     // Timed out
-                    client.Close();
-                    client = null;
+                    CloseConnection();
                     return false;
                 }
 
                 stream = client.GetStream();
 
-                GameObject g = await Library.CreateLocalGameObject(new Player(Vector2.Zero));
-
-                Library.MainCamera.SetTarget(g);
-
                 Task.Run(ReceiveMessages);
 
                 // Complete the connection
                 client.EndConnect(asyncResult);
+                OnServerConnect?.Invoke(null, EventArgs.Empty);
+
+                if (Library.playerInstance != null)
+                {
+                    await Library.FetchNewGameObjectID(Library.playerInstance);
+                }
+
                 return true;
             }
             catch (Exception)
             {
-                client.Close();
-                client = null;
+                CloseConnection();
                 return false;
             }
         }
 
-        public static void Disconnect()
+        public static void CloseConnection()
         {
             client.Close();
             client = null;
@@ -105,17 +111,24 @@ namespace MineExploration
             stream.Write(messageBytes, 0, messageBytes.Length);
         }
 
-        public static async Task<int> RequestIdFromServer()
+        public static async Task<int> RequestIdFromServer(GameObject gameObjectToAssign)
         {
             try
             {
-                byte[] buffer = Encoding.UTF8.GetBytes("GET_ID");
+                byte[] buffer = Encoding.UTF8.GetBytes("GET_ID" + ":" + (int)gameObjectToAssign.Type);
+
+                // Create the response buffer
+                byte[] responseBuffer = new byte[1024];
+
+                // Start reading response before sending request
+                Task<int> readTask = stream.ReadAsync(responseBuffer, 0, responseBuffer.Length);
+
+                // Send the request
                 await stream.WriteAsync(buffer, 0, buffer.Length);
                 await stream.FlushAsync();
 
-                // Read response
-                byte[] responseBuffer = new byte[1024];
-                int bytesRead = await stream.ReadAsync(responseBuffer, 0, responseBuffer.Length);
+                // Wait for response to arrive
+                int bytesRead = await readTask;
                 string response = Encoding.UTF8.GetString(responseBuffer, 0, bytesRead);
 
                 // Parse response
@@ -147,32 +160,42 @@ namespace MineExploration
                     continue;
                 }
 
+
                 string[] parts = objectData.Split(':');
 
-                if (parts.Length < 4)
+                ServerDataType recivedServerDataType = (ServerDataType)int.Parse(parts[0]);
+
+                switch (recivedServerDataType)
                 {
-                    continue;
-                }
+                    case ServerDataType.ID:
 
-                int senderId = int.Parse(parts[0]);
-                int type = int.Parse(parts[1]);
-                float x = float.Parse(parts[2]);
-                float y = float.Parse(parts[3]);
 
-                Vector2 position = new(x, y);
-
-                if (Library.serverGameObjects.TryGetValue(senderId, out GameObject gameObject))
-                {
-                    gameObject.SetPosition(position);
-                    return;
-                }
-
-                switch ((GameObjectType)type)
-                {
-                    case GameObjectType.Player:
-                        Library.CreateServerGameObject(new Player(position), senderId);
                         break;
-                    case GameObjectType.Enemy:
+                    case ServerDataType.GameObject:
+
+                        int senderId = int.Parse(parts[0]);
+                        int type = int.Parse(parts[1]);
+                        float x = float.Parse(parts[2]);
+                        float y = float.Parse(parts[3]);
+
+                        Vector2 position = new(x, y);
+
+                        if (Library.serverGameObjects.TryGetValue(senderId, out GameObject gameObject))
+                        {
+                            gameObject.SetPosition(position);
+                            return;
+                        }
+
+                        switch ((GameObjectType)type)
+                        {
+                            case GameObjectType.Player:
+                                Library.CreateServerGameObject(new Player(position), senderId);
+                                break;
+                            case GameObjectType.Enemy:
+                                break;
+                            default:
+                                break;
+                        }
                         break;
                     default:
                         break;
@@ -180,4 +203,10 @@ namespace MineExploration
             }
         }
     }
+}
+
+public enum ServerDataType
+{
+    ID,
+    GameObject
 }

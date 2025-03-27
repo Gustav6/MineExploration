@@ -19,15 +19,32 @@ namespace MineExploration
         public float SpriteLayer { get; protected set; } = TextureManager.SpriteLayers[SpriteLayerIdentifier.Default];
         #endregion
 
-        public int Id { get; set; }
+        public int ServerId { get; set; } = -1;
         public GameObjectType Type { get; protected set; }
+
+        GameObjectData gameObjectData;
 
         public bool IsDestroyed { get; private set; }
 
         public virtual void Start()
         {
+            gameObjectData = new GameObjectData
+            {
+                serverId = ServerId,
+                type = Type,
+                positionX = (int)Position.X,
+                positionY = (int)Position.Y
+            };
+
             Origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
             Source = new Rectangle(0, 0, Texture.Width, Texture.Height);
+
+            ServerHandler.OnServerConnect += ServerHandler_OnServerConnect;
+
+            if (ServerHandler.ConnectedToServer)
+            {
+                Task.Run(() => SendToServerOnConnect());
+            }
         }
 
         public virtual void Update(GameTime gameTime)
@@ -41,10 +58,24 @@ namespace MineExploration
             IsDestroyed = true;
         }
 
+        private void ServerHandler_OnServerConnect(object sender, EventArgs e)
+        {
+            Task.Run(() => SendToServerOnConnect());
+        }
+
+        public virtual async Task SendToServerOnConnect() { }
+
         public virtual void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(Texture, Position, Source, Color, Rotation, Origin, Scale, SpriteEffects, SpriteLayer);
         }
+    }
+
+    public struct GameObjectData
+    {
+        public int serverId;
+        public GameObjectType type;
+        public int positionX, positionY;
     }
 }
 

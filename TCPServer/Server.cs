@@ -13,8 +13,10 @@ namespace MineExploration
 {
     public class Server
     {
-        private static Queue<int> availableIds = new();
+        private readonly static Queue<int> availableIds = new();
         private static int nextObjectId = 1;
+
+        private Dictionary<int, int> iDGameObjectPair = []; // Key: ID, Value: GameObject ID
 
         public bool IsRunning { get; private set; }
         private TcpListener listener;
@@ -95,21 +97,30 @@ namespace MineExploration
                     }
 
                     string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    Console.WriteLine($"Client { clientId } sent: { message }");
+                    Console.WriteLine($"[CLIENT] { clientId } sent: { message }");
 
-                    if (message == "GET_ID")
+                    // The first part of the variable below should always be the "method"
+                    // This would mean that the message should be formatted as "METHOD:DATA"
+                    string[] parts = message.Split(':');
+
+                    if (parts.ElementAt(0).ToString() == "GET_ID")
                     {
                         int newId = NewClientId();
                         string response = $"ID:{ newId }";
 
+                        iDGameObjectPair.TryAdd(newId, int.Parse(parts.ElementAt(1)));
+
                         byte[] responseBytes = Encoding.UTF8.GetBytes(response);
                         ClientManager.SendMessage(ClientManager.GetClient(clientId), response);
-
-                        Console.WriteLine($"[Server] Sent new ID: { newId }");
                     }
-                    else
+                    else if (parts.ElementAt(0).ToString() == "BROADCAST")
                     {
-                        ClientManager.Broadcast(message, client);
+                        // Send the message to all clients
+
+                        int iD = int.Parse(parts.ElementAt(1));
+                        string brodcastMessage = parts.ElementAt(1) + ":" + iDGameObjectPair[iD] + ":" + parts.ElementAt(2) + ":" + parts.ElementAt(3);
+
+                        ClientManager.Broadcast(brodcastMessage, client);
                     }
 
                     // Echo the message back to the client
