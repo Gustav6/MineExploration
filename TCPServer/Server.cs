@@ -110,7 +110,12 @@ namespace MineExploration
                         iDGameObjectPair.TryAdd(newId, int.Parse(parts.ElementAt(1)));
 
                         byte[] responseBytes = Encoding.UTF8.GetBytes(response);
-                        ClientManager.SendMessage(ClientManager.GetClient(clientId), response);
+
+                        ClientInfo? clientInfo = ClientManager.GetClient(clientId);
+                        if (clientInfo != null)
+                        {
+                            ClientManager.SendMessage(clientInfo.Value, response);
+                        }
                     }
                     else if (parts.ElementAt(0).ToString() == "BROADCAST")
                     {
@@ -134,8 +139,6 @@ namespace MineExploration
             finally
             {
                 ClientManager.RemoveClient(clientId);
-                client.Close();
-                Console.WriteLine($"[CLIENT] The client: { clientId } disconnected.");
             }
         }
     }

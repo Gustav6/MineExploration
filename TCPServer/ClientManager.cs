@@ -32,7 +32,7 @@ namespace TCPServer
         /// <summary>
         /// Removes a client by ID and closes its connection.
         /// </summary>
-        public static bool RemoveClient(string clientId)
+        public static void RemoveClient(string clientId)
         {
             lock (_lock)
             {
@@ -40,18 +40,15 @@ namespace TCPServer
                 {
                     clientInfo.TcpClient.Close();
                     clients.Remove(clientId);
-                    Console.WriteLine($"[SERVER] The client { clientId } was removed. Total clients: { clients.Count }");
-                    return true;
+                    Console.WriteLine($"[SERVER] The client { clientId } has disconnected. Total clients: { clients.Count }");
                 }
             }
-
-            return false;
         }
 
         /// <summary>
         /// Gets the ClientInfo for a given client ID, or null if not found.
         /// </summary>
-        public static ClientInfo GetClient(string clientId)
+        public static ClientInfo? GetClient(string clientId)
         {
             lock (_lock)
             {
@@ -106,7 +103,7 @@ namespace TCPServer
         }
     }
 
-    public class ClientInfo(string clientId, TcpClient tcpClient)
+    public readonly struct ClientInfo(string clientId, TcpClient tcpClient)
     {
         public string ClientId { get; } = clientId;
         public TcpClient TcpClient { get; } = tcpClient;
