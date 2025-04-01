@@ -48,7 +48,7 @@ namespace MineExploration
             listener.Start();
             IsRunning = true;
 
-            Console.WriteLine($"Server started on port { port }, and using ip address { address }");
+            Console.WriteLine($"[SERVER] Server has started port on { port }, and using ip address { address }");
 
             Task.Run(AcceptClients);
         }
@@ -61,7 +61,6 @@ namespace MineExploration
                 string clientId = Guid.NewGuid().ToString(); // or something else
 
                 ClientManager.AddClient(clientId, client);
-                Console.WriteLine($"Client { clientId } connected!");
 
                 Task.Run(() => HandleClient(client, clientId)); // Start handling this client in a new task
             }
@@ -97,7 +96,7 @@ namespace MineExploration
                     }
 
                     string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    Console.WriteLine($"[CLIENT] { clientId } sent: { message }");
+                    Console.WriteLine($"[CLIENT] Client: { clientId } sent: [{ message }]");
 
                     // The first part of the variable below should always be the "method"
                     // This would mean that the message should be formatted as "METHOD:DATA"
@@ -130,13 +129,13 @@ namespace MineExploration
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error with client { clientId }: { ex.Message }");
+                Console.WriteLine($"[ERROR] Found error with client { clientId }: { ex.Message }");
             }
             finally
             {
                 ClientManager.RemoveClient(clientId);
                 client.Close();
-                Console.WriteLine($"Client { clientId } disconnected.");
+                Console.WriteLine($"[CLIENT] The client: { clientId } disconnected.");
             }
         }
     }

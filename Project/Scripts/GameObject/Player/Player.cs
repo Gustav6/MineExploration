@@ -61,14 +61,14 @@ namespace MineExploration
             await base.SendToServerOnConnect();
 
             // Game object has not recived a server id yet
-            if (ServerId == -1)
-            {
-                // Could not fetch a new server id
-                if (!await Library.FetchNewGameObjectID(this))
-                {
-                    Destroy();
-                }
-            }
+            //if (ServerId == -1)
+            //{
+            //    // Could not fetch a new server id
+            //    if (!await Library.FetchNewGameObjectID(this))
+            //    {
+            //        Destroy();
+            //    }
+            //}
 
             ServerHandler.SendMessage("BROADCAST" + ":" + ServerId + ":" + Position.X + ":" + Position.Y);
         }

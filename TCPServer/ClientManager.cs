@@ -26,7 +26,7 @@ namespace TCPServer
                 clients[clientId] = clientInfo;
             }
 
-            Console.WriteLine($"Client { clientId } added. Total clients: {clients.Count}");
+            Console.WriteLine($"[SERVER] The client: { clientId } has connected. Total clients: { clients.Count }");
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace TCPServer
                 {
                     clientInfo.TcpClient.Close();
                     clients.Remove(clientId);
-                    Console.WriteLine($"Client { clientId } removed. Total clients: {clients.Count}");
+                    Console.WriteLine($"[SERVER] The client { clientId } was removed. Total clients: { clients.Count }");
                     return true;
                 }
             }
@@ -102,7 +102,7 @@ namespace TCPServer
                 stream.FlushAsync();
             }
 
-            Console.WriteLine("[SERVER]" + " Sent: " + message + " to client: " + clientInfo.ClientId);
+            Console.WriteLine($"[SERVER] Server sent: { message } to client: { clientInfo.ClientId }");
         }
     }
 

@@ -60,10 +60,10 @@ namespace MineExploration
                 client.EndConnect(asyncResult);
                 OnServerConnect?.Invoke(null, EventArgs.Empty);
 
-                if (Library.playerInstance != null)
-                {
-                    await Library.FetchNewGameObjectID(Library.playerInstance);
-                }
+                //if (Library.playerInstance != null)
+                //{
+                //    await Library.FetchNewGameObjectID(Library.playerInstance);
+                //}
 
                 return true;
             }
@@ -95,7 +95,6 @@ namespace MineExploration
 
                 string receivedData = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                 ProcessReceivedData(receivedData);
-                //Debug.WriteLine($"Received: {receivedData}");
             }
         }
 
@@ -111,7 +110,7 @@ namespace MineExploration
             stream.Write(messageBytes, 0, messageBytes.Length);
         }
 
-        public static async Task<int> RequestIdFromServer(GameObject gameObjectToAssign)
+        public static async Task RequestIdFromServer(GameObject gameObjectToAssign)
         {
             try
             {
@@ -128,25 +127,23 @@ namespace MineExploration
                 await stream.FlushAsync();
 
                 // Wait for response to arrive
-                int bytesRead = await readTask;
-                string response = Encoding.UTF8.GetString(responseBuffer, 0, bytesRead);
+                //int bytesRead = await readTask;
+                //string response = Encoding.UTF8.GetString(responseBuffer, 0, bytesRead);
 
                 // Parse response
-                if (response.StartsWith("ID:"))
-                {
-                    string[] parts = response.Split(':');
-                    if (parts.Length >= 2 && int.TryParse(parts[1], out int newId))
-                    {
-                        return newId;
-                    }
-                }
+                //if (response.StartsWith("ID:"))
+                //{
+                //    string[] parts = response.Split(':');
+                //    if (parts.Length >= 2 && int.TryParse(parts[1], out int newId))
+                //    {
+                //        return newId;
+                //    }
+                //}
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Client] Error requesting ID: { ex.Message }");
+                Console.WriteLine($"Error requesting ID: { ex.Message }");
             }
-
-            return -1; // Return -1 if failed
         }
 
         private static void ProcessReceivedData(string data)
