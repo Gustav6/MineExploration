@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MineExploration
@@ -19,63 +20,48 @@ namespace MineExploration
         public float SpriteLayer { get; protected set; } = TextureManager.SpriteLayers[SpriteLayerIdentifier.Default];
         #endregion
 
-        public int ServerId { get; set; } = -1;
+        public int ServerID { get; set; } = -1;
         public GameObjectType Type { get; protected set; }
-
-        GameObjectData gameObjectData;
-
         public bool IsDestroyed { get; private set; }
 
-        public virtual void Start()
+        public TaskCompletionSource<bool> tcs = new();
+        private bool canRun = false;
+
+        public virtual async Task Start()
         {
-            gameObjectData = new GameObjectData
-            {
-                serverId = ServerId,
-                type = Type,
-                positionX = (int)Position.X,
-                positionY = (int)Position.Y
-            };
+            await tcs.Task;
+
+            ServerHandler.SendMessage($"{(int)ServerCommands.Echo}:{(int)DataSent.GameObject}:{ServerID}:{(int)Type}:{Position.X}:{Position.Y}");
 
             Origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
             Source = new Rectangle(0, 0, Texture.Width, Texture.Height);
 
-            ServerHandler.OnServerConnect += ServerHandler_OnServerConnect;
-
-            if (ServerHandler.ConnectedToServer)
-            {
-                Task.Run(() => SendToServerOnConnect());
-            }
+            canRun = true;
         }
 
         public virtual void Update(GameTime gameTime)
         {
-
+            if (!canRun)
+            {
+                return;
+            }
         }
 
         public virtual void RunOnDestroy() { }
         public void Destroy()
         {
             IsDestroyed = true;
-        }
 
-        private void ServerHandler_OnServerConnect(object sender, EventArgs e)
-        {
-            Task.Run(() => SendToServerOnConnect());
+            //if (ServerHandler.Connected)
+            //{
+            //    ServerHandler.SendMessage($"{ (int)ServerCommands.ReleaseID }:{ ServerID }");
+            //}
         }
-
-        public virtual async Task SendToServerOnConnect() { }
 
         public virtual void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(Texture, Position, Source, Color, Rotation, Origin, Scale, SpriteEffects, SpriteLayer);
         }
-    }
-
-    public struct GameObjectData
-    {
-        public int serverId;
-        public GameObjectType type;
-        public int positionX, positionY;
     }
 }
 

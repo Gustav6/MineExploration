@@ -12,41 +12,35 @@ namespace MineExploration
 
         public static Player playerInstance;
 
-        public static List<GameObject> localGameObjects = [];
-        public static Dictionary<int, GameObject> serverGameObjects = [];
+        public static List<GameObject> localGameObjects = [], serverGameObjects = [];
+        public static Dictionary<int, GameObject> serverIDGameObjectPair = [];
 
         public static GameObject CreateLocalGameObject(GameObject gameObject)
         {
+            if (ServerHandler.Connected)
+            {
+                ServerHandler.RequestIdFromServer(gameObject);
+            }
+
             localGameObjects.Add(gameObject);
 
-            gameObject.Start();
+            _ = gameObject.Start();
 
             return gameObject;
         }
 
-        public static async Task<GameObject> CreateServerGameObject(GameObject gameObject, int id = -1)
+        public static GameObject CreateServerGameObject(GameObject gameObject, int iD)
         {
-            //if (id == -1)
-            //{
-            //    if (await FetchNewGameObjectID(gameObject))
-            //    {
-            //        serverGameObjects.Add(gameObject.ServerId, gameObject);
+            serverIDGameObjectPair.Add(iD, gameObject);
 
-            //        gameObject.Start();
+            gameObject.ServerID = iD;
+            gameObject.tcs.SetResult(true);
 
-            //        return gameObject;
-            //    }
-            //}
-            //else
-            //{
-            //    serverGameObjects.Add(id, gameObject);
+            serverGameObjects.Add(gameObject);
 
-            //    gameObject.Start();
+            _ = gameObject.Start();
 
-            //    return gameObject;
-            //}
-
-            return null;
+            return gameObject;
         }
     }
 }

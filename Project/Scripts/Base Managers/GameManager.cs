@@ -20,7 +20,7 @@ namespace MineExploration
 
             WindowManager.ChangeSize(800, 480);
 
-            ServerHandler.TryConnect("127.0.0.1", 13000, 1000);
+            _ = ServerHandler.TryToConnect("127.0.0.1", 13000, 1000);
 
             Library.playerInstance = (Player)Library.CreateLocalGameObject(new Player(Vector2.Zero));
             Library.MainCamera.SetTarget(Library.playerInstance);
@@ -70,16 +70,23 @@ namespace MineExploration
             }
 
 
-            for (int i = Library.localGameObjects.Count - 1; i >= 0; i--)
+            for (int i = Library.serverIDGameObjectPair.Keys.Count - 1; i >= 0; i--)
             {
-                if (Library.localGameObjects[i].IsDestroyed)
+                if (Library.serverIDGameObjectPair.ElementAt(i).Value.IsDestroyed)
                 {
-                    Library.localGameObjects[i].RunOnDestroy();
-                    Library.localGameObjects.RemoveAt(i);
+                    Library.serverIDGameObjectPair.ElementAt(i).Value.RunOnDestroy();
+
+                    Library.serverGameObjects.Remove(Library.serverIDGameObjectPair.ElementAt(i).Value);
+                    Library.localGameObjects.Remove(Library.serverIDGameObjectPair.ElementAt(i).Value);
+
+                    Library.serverIDGameObjectPair.Remove(Library.serverIDGameObjectPair.ElementAt(i).Key);
                     continue;
                 }
 
-                Library.localGameObjects[i].Update(gameTime);
+                if (Library.localGameObjects.Contains(Library.serverIDGameObjectPair.ElementAt(i).Value))
+                {
+                    Library.localGameObjects[i].Update(gameTime);
+                }
             }
         }
 
@@ -94,17 +101,17 @@ namespace MineExploration
                 Library.localGameObjects[i].Draw(spriteBatch);
             }
 
-            for (int i = 0; i < Library.serverGameObjects.Keys.Count; i++)
+            for (int i = 0; i < Library.serverGameObjects.Count; i++)
             {
-                Library.serverGameObjects.ElementAt(i).Value.Draw(spriteBatch);
+                Library.serverGameObjects[i].Draw(spriteBatch);
             }
 
             spriteBatch.End();
 
             spriteBatch.Begin();
 
-            spriteBatch.DrawString(TextureManager.Fonts[FontIdentifier.Text], "Local: " + Library.localGameObjects.Count, Vector2.Zero, Color.Green, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, TextureManager.SpriteLayers[SpriteLayerIdentifier.UI]);
-            spriteBatch.DrawString(TextureManager.Fonts[FontIdentifier.Text], "Server: " + Library.serverGameObjects.Keys.Count, new Vector2(0, 50), Color.Green, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, TextureManager.SpriteLayers[SpriteLayerIdentifier.UI]);
+            spriteBatch.DrawString(TextureManager.Fonts[FontIdentifier.Text], "Local game objects: " + Library.localGameObjects.Count, Vector2.Zero, Color.Green, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, TextureManager.SpriteLayers[SpriteLayerIdentifier.UI]);
+            spriteBatch.DrawString(TextureManager.Fonts[FontIdentifier.Text], "Server game objects: " + Library.serverGameObjects.Count, new Vector2(0, 50), Color.Green, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, TextureManager.SpriteLayers[SpriteLayerIdentifier.UI]);
 
             spriteBatch.End();
         }

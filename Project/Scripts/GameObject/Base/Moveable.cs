@@ -17,9 +17,9 @@ namespace MineExploration
 
         public override void Update(GameTime gameTime)
         {
-            MoveGameObject(gameTime);
-
             base.Update(gameTime);
+
+            MoveGameObject(gameTime);
         }
 
         private void MoveGameObject(GameTime gameTime)
@@ -32,6 +32,8 @@ namespace MineExploration
             MoveDirection.Normalize();
 
             SetPosition(Position + (MoveDirection * movementSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds));
+
+            ServerHandler.SendMessage($"{(int)ServerCommands.Echo}:{(int)DataSent.Move}:{ServerID}:{Position.X}:{Position.Y}");
         }
 
         public void LockMovement()

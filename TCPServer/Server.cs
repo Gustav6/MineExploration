@@ -16,11 +16,12 @@ namespace MineExploration
         private readonly static Queue<int> availableIds = new();
         private static int nextObjectId = 1;
 
-        private Dictionary<int, int> iDGameObjectPair = []; // Key: ID, Value: GameObject ID
+        private Dictionary<int, GameObjectType> iDGameObjectTypePair = []; // Key: ID, Value: GameObject ID
 
         public bool IsRunning { get; private set; }
         private TcpListener listener;
 
+        #region ID handling
         public static int NewClientId()
         {
             int id;
@@ -37,11 +38,15 @@ namespace MineExploration
             return id;
         }
 
-        public static void ReleaseId(int id)
+        public static void ReleaseID(int id)
         {
             availableIds.Enqueue(id);
-        }
 
+            Console.WriteLine($"[SERVER] Released id: [{id}]");
+        }
+        #endregion
+
+        #region Start and stop functions
         public void Start(int port, IPAddress address)
         {
             listener = new TcpListener(address, port);
@@ -51,19 +56,6 @@ namespace MineExploration
             Console.WriteLine($"[SERVER] Server has started port on { port }, and using ip address { address }");
 
             Task.Run(AcceptClients);
-        }
-
-        private async Task AcceptClients()
-        {
-            while (IsRunning)
-            {
-                TcpClient client = await listener.AcceptTcpClientAsync();
-                string clientId = Guid.NewGuid().ToString(); // or something else
-
-                ClientManager.AddClient(clientId, client);
-
-                Task.Run(() => HandleClient(client, clientId)); // Start handling this client in a new task
-            }
         }
 
         public void Stop()
@@ -78,9 +70,23 @@ namespace MineExploration
 
             ClientManager.clients.Clear();
         }
+        #endregion
 
-        private async Task HandleClient(TcpClient client, string clientId)
+        private async Task AcceptClients()
         {
+            while (IsRunning)
+            {
+                TcpClient client = await listener.AcceptTcpClientAsync();
+                
+                _ = Task.Run(() => HandleClient(client)); // Start handling this client in a new task
+            }
+        }
+
+        private async Task HandleClient(TcpClient client)
+        {
+            string clientId = Guid.NewGuid().ToString();
+            ClientManager.AddClient(clientId, client);
+
             NetworkStream stream = client.GetStream();
             byte[] buffer = new byte[1024];
 
@@ -95,46 +101,68 @@ namespace MineExploration
                         break;
                     }
 
-                    string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    Console.WriteLine($"[CLIENT] Client: { clientId } sent: [{ message }]");
+                    string messageReceived = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    string message;
 
-                    // The first part of the variable below should always be the "method"
-                    // This would mean that the message should be formatted as "METHOD:DATA"
-                    string[] parts = message.Split(':');
+                    // The index 0 in the variable below should withhold the "method"
+                    // This would mean that the message shall be formatted as "METHOD:DATA..."
+                    string[] parts = messageReceived.Split(':');
 
-                    if (parts.ElementAt(0).ToString() == "GET_ID")
+                    ServerCommands command = (ServerCommands)int.Parse(parts[0]);
+
+                    //Console.WriteLine($"[CLIENT] Client: { clientId } sent: [{ messageReceived }]"); // (For debugging)
+                    Console.WriteLine($"[CLIENT] Client: { clientId } sent command: { command } ");
+
+                    switch (command)
                     {
-                        int newId = NewClientId();
-                        string response = $"ID:{ newId }";
+                        case ServerCommands.FetchID: // For this command index 1 should be the game objects *temp id*
 
-                        iDGameObjectPair.TryAdd(newId, int.Parse(parts.ElementAt(1)));
+                            if (parts.Length != 2)
+                            {
+                                break;
+                            }
 
-                        byte[] responseBytes = Encoding.UTF8.GetBytes(response);
+                            int newId = NewClientId();
+                            message = $"{(int)DataSent.ID}:{newId}:{parts[1]}";
 
-                        ClientInfo? clientInfo = ClientManager.GetClient(clientId);
-                        if (clientInfo != null)
-                        {
-                            ClientManager.SendMessage(clientInfo.Value, response);
-                        }
+                            //iDGameObjectTypePair.TryAdd(newId, (GameObjectType)int.Parse(parts[2]));
+
+                            byte[] responseBytes = Encoding.UTF8.GetBytes(message);
+
+                            ClientInfo? clientInfo = ClientManager.GetClient(clientId);
+                            if (clientInfo != null)
+                            {
+                                ClientManager.SendMessage(message, clientInfo.Value);
+                                clientInfo.Value.connectedIDS.Add(newId);
+                            }
+
+                            Console.WriteLine($"[SERVER] Sent: [{message}] to client: [{clientId}]");
+                            break;
+                        case ServerCommands.Echo:
+
+                            message = string.Join(":", parts.Skip(1));
+
+                            ClientManager.Echo(message, client);
+
+                            Console.WriteLine($"[SERVER] Echo: [{message}] from client: [{clientId}]");
+                            break;
+                        case ServerCommands.ReleaseID:
+                            if (parts.Length != 2)
+                            {
+                                break;
+                            }
+
+                            ReleaseID(int.Parse(parts[1]));
+                            break;
+                        default:
+                            Console.WriteLine($"[ERROR] Unknown command: {command} sent from: [{clientId}] ");
+                            break;
                     }
-                    else if (parts.ElementAt(0).ToString() == "BROADCAST")
-                    {
-                        // Send the message to all clients
-
-                        int iD = int.Parse(parts.ElementAt(1));
-                        string brodcastMessage = parts.ElementAt(1) + ":" + iDGameObjectPair[iD] + ":" + parts.ElementAt(2) + ":" + parts.ElementAt(3);
-
-                        ClientManager.Broadcast(brodcastMessage, client);
-                    }
-
-                    // Echo the message back to the client
-                    //byte[] response = Encoding.UTF8.GetBytes($"Server received: { receivedMessage }");
-                    //await stream.WriteAsync(response, 0, response.Length);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR] Found error with client { clientId }: { ex.Message }");
+                Console.WriteLine($"[ERROR] Client: [{ clientId }], { ex.Message }");
             }
             finally
             {

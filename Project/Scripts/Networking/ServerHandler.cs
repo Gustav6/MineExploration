@@ -16,8 +16,8 @@ namespace MineExploration
     {
         private static NetworkStream stream;
         private static TcpClient client;
-        public static event EventHandler OnServerConnect;
-        public static bool ConnectedToServer { get; private set; } = false;
+        public static bool Connected { get; private set; }
+        private static readonly Dictionary<string, GameObject> tempLocalIDPair = [];
 
         /// <summary>
         /// Tries to connect to the specified TCP server within a given timeout.
@@ -27,57 +27,39 @@ namespace MineExploration
         /// <param name="timeoutMs">Timeout in milliseconds.</param>
         /// <param name="client">An out parameter that returns the connected TcpClient if successful.</param>
         /// <returns>True if the connection is successful; otherwise, false.</returns>
-        public static async Task<bool> TryConnect(string host, int port, int timeoutMs)
+        public static async Task<bool> TryToConnect(string host, int port, int timeoutMs)
         {
-            if (client != null)
-            {
-                CloseConnection();
-            }
-
             client = new TcpClient();
             try
             {
-                // Begin asynchronous connect
-                IAsyncResult asyncResult = client.BeginConnect(host, port, null, null);
-
-                // Wait for the connection or timeout
-                bool success = asyncResult.AsyncWaitHandle.WaitOne(TimeSpan.FromMilliseconds(timeoutMs));
-
-                ConnectedToServer = success;
-
-                if (!ConnectedToServer)
+                using (var cts = new CancellationTokenSource(timeoutMs))
                 {
-                    // Timed out
-                    CloseConnection();
-                    return false;
+                    // Begin asynchronous connection
+                    await client.ConnectAsync(host, port).WaitAsync(cts.Token);
+
+                    stream = client.GetStream();
+                    _ = Task.Run(ReceiveMessages);
+
+                    Connected = true;
                 }
-
-                stream = client.GetStream();
-
-                Task.Run(ReceiveMessages);
-
-                // Complete the connection
-                client.EndConnect(asyncResult);
-                OnServerConnect?.Invoke(null, EventArgs.Empty);
-
-                //if (Library.playerInstance != null)
-                //{
-                //    await Library.FetchNewGameObjectID(Library.playerInstance);
-                //}
 
                 return true;
             }
             catch (Exception)
             {
-                CloseConnection();
+                Disconnect();
+
+                Connected = true;
+
                 return false;
             }
         }
 
-        public static void CloseConnection()
+        public static void Disconnect()
         {
             client.Close();
             client = null;
+            Connected = false;
         }
 
         private static async Task ReceiveMessages()
@@ -110,40 +92,11 @@ namespace MineExploration
             stream.Write(messageBytes, 0, messageBytes.Length);
         }
 
-        public static async Task RequestIdFromServer(GameObject gameObjectToAssign)
+        public static void RequestIdFromServer(GameObject gameObjectToAssign)
         {
-            try
-            {
-                byte[] buffer = Encoding.UTF8.GetBytes("GET_ID" + ":" + (int)gameObjectToAssign.Type);
-
-                // Create the response buffer
-                byte[] responseBuffer = new byte[1024];
-
-                // Start reading response before sending request
-                Task<int> readTask = stream.ReadAsync(responseBuffer, 0, responseBuffer.Length);
-
-                // Send the request
-                await stream.WriteAsync(buffer, 0, buffer.Length);
-                await stream.FlushAsync();
-
-                // Wait for response to arrive
-                //int bytesRead = await readTask;
-                //string response = Encoding.UTF8.GetString(responseBuffer, 0, bytesRead);
-
-                // Parse response
-                //if (response.StartsWith("ID:"))
-                //{
-                //    string[] parts = response.Split(':');
-                //    if (parts.Length >= 2 && int.TryParse(parts[1], out int newId))
-                //    {
-                //        return newId;
-                //    }
-                //}
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error requesting ID: { ex.Message }");
-            }
+            string tempID = Guid.NewGuid().ToString();
+            tempLocalIDPair.TryAdd(tempID, gameObjectToAssign);
+            SendMessage($"{ (int)ServerCommands.FetchID }:{ tempID }");
         }
 
         private static void ProcessReceivedData(string data)
@@ -157,41 +110,80 @@ namespace MineExploration
                     continue;
                 }
 
-
                 string[] parts = objectData.Split(':');
 
-                ServerDataType recivedServerDataType = (ServerDataType)int.Parse(parts[0]);
+                DataSent receivedData = (DataSent)int.Parse(parts[0]);
 
-                switch (recivedServerDataType)
+
+                int senderID, type;
+                Vector2 position;
+
+                switch (receivedData)
                 {
-                    case ServerDataType.ID:
+                    case DataSent.ID: // Fetch the game object that sent the request and assign it a id
 
+                        if (parts.Length != 3) // To ensure the right amount of parts was sent
+                        {
+                            break;
+                        }
+
+                        string gameObjectsIdentifier = parts[2];
+                        int serverID = int.Parse(parts[1]);
+
+                        tempLocalIDPair[gameObjectsIdentifier].ServerID = serverID;
+                        Library.serverIDGameObjectPair.TryAdd(serverID, tempLocalIDPair[gameObjectsIdentifier]);
+
+                        tempLocalIDPair[gameObjectsIdentifier].tcs.SetResult(true); // Allows update to be called
+                        tempLocalIDPair.Remove(gameObjectsIdentifier);
 
                         break;
-                    case ServerDataType.GameObject:
-
-                        int senderId = int.Parse(parts[0]);
-                        int type = int.Parse(parts[1]);
-                        float x = float.Parse(parts[2]);
-                        float y = float.Parse(parts[3]);
-
-                        Vector2 position = new(x, y);
-
-                        if (Library.serverGameObjects.TryGetValue(senderId, out GameObject gameObject))
+                    case DataSent.GameObject:
+                        if (parts.Length != 5) // To ensure the right amount of parts was sent
                         {
-                            gameObject.SetPosition(position);
-                            return;
+                            break;
                         }
+
+                        senderID = int.Parse(parts[1]);
+                        type = int.Parse(parts[2]);
+
+                        position = new(float.Parse(parts[3]), float.Parse(parts[4]));
+
 
                         switch ((GameObjectType)type)
                         {
                             case GameObjectType.Player:
-                                Library.CreateServerGameObject(new Player(position), senderId);
+                                Library.CreateServerGameObject(new Player(position), senderID);
                                 break;
                             case GameObjectType.Enemy:
+                                //Library.CreateServerGameObject(new Enemy(position), senderID);
                                 break;
                             default:
                                 break;
+                        }
+
+                        break;
+                    case DataSent.Move:
+
+                        if (parts.Length != 4) // To ensure the right amount of parts was sent
+                        {
+                            break;
+                        }
+
+                        senderID = int.Parse(parts[1]);
+
+                        position = new(float.Parse(parts[2]), float.Parse(parts[3]));
+
+                        if (Library.serverIDGameObjectPair.TryGetValue(senderID, out GameObject toBeMoved))
+                        {
+                            toBeMoved.SetPosition(position);
+                        }
+                        break;
+                    case DataSent.DestroyGameObject:
+                        senderID = int.Parse(parts[1]);
+
+                        if (Library.serverIDGameObjectPair.TryGetValue(senderID, out GameObject toBeRemoved))
+                        {
+                            toBeRemoved.Destroy();
                         }
                         break;
                     default:
@@ -202,8 +194,18 @@ namespace MineExploration
     }
 }
 
-public enum ServerDataType
+public enum DataSent
 {
     ID,
-    GameObject
+    Move,
+    Attack,
+    GameObject,
+    DestroyGameObject
+}
+
+public enum ServerCommands
+{
+    FetchID,
+    ReleaseID,
+    Echo,
 }

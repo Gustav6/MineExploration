@@ -1,4 +1,5 @@
-﻿using MineExploration;
+﻿using Microsoft.Xna.Framework.Input;
+using MineExploration;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -38,9 +39,16 @@ namespace TCPServer
             {
                 if (clients.TryGetValue(clientId, out var clientInfo))
                 {
+                    for (int i = 0; i < clientInfo.connectedIDS.Count; i++)
+                    {
+                        Echo($"{(int)DataSent.DestroyGameObject}:{clientInfo.connectedIDS[i]}", clientInfo.TcpClient);
+                        Server.ReleaseID(clientInfo.connectedIDS[i]);
+                    }
+
                     clientInfo.TcpClient.Close();
                     clients.Remove(clientId);
-                    Console.WriteLine($"[SERVER] The client { clientId } has disconnected. Total clients: { clients.Count }");
+
+                    Console.WriteLine($"[SERVER] The client {clientId} has disconnected. Total clients: {clients.Count}");
                 }
             }
         }
@@ -64,7 +72,7 @@ namespace TCPServer
         /// <summary>
         /// Broadcasts a message to all connected clients.
         /// </summary>
-        public static void Broadcast(string message, TcpClient? sender = null)
+        public static void Echo(string message, TcpClient? sender = null)
         {
             lock (_lock)
             {
@@ -75,7 +83,7 @@ namespace TCPServer
                         continue;
                     }
 
-                    SendMessage(pair.Value, message);
+                    SendMessage(message, pair.Value);
                 }
             }
         }
@@ -83,7 +91,7 @@ namespace TCPServer
         /// <summary>
         /// Sends a message to a specific client.
         /// </summary>
-        public static void SendMessage(ClientInfo clientInfo, string message)
+        public static void SendMessage(string message, ClientInfo clientInfo)
         {
             if (clientInfo.TcpClient == null)
             {
@@ -98,14 +106,13 @@ namespace TCPServer
                 stream.Write(data, 0, data.Length);
                 stream.FlushAsync();
             }
-
-            Console.WriteLine($"[SERVER] Server sent: { message } to client: { clientInfo.ClientId }");
         }
     }
 
-    public readonly struct ClientInfo(string clientId, TcpClient tcpClient)
+    public struct ClientInfo(string clientId, TcpClient tcpClient)
     {
         public string ClientId { get; } = clientId;
         public TcpClient TcpClient { get; } = tcpClient;
+        public List<int> connectedIDS = new();
     }
 }
