@@ -33,7 +33,7 @@ namespace MineExploration
         {
             serverIDGameObjectPair.Add(iD, gameObject);
 
-            gameObject.ServerID = iD;
+            gameObject.gameObjectData.ID = iD;
             gameObject.tcs.SetResult(true);
 
             serverGameObjects.Add(gameObject);

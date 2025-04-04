@@ -120,8 +120,7 @@ namespace MineExploration
 
                 switch (receivedData)
                 {
-                    case DataSent.ID: // Fetch the game object that sent the request and assign it a id
-
+                    case DataSent.ID:
                         if (parts.Length != 3) // To ensure the right amount of parts was sent
                         {
                             break;
@@ -130,15 +129,15 @@ namespace MineExploration
                         string gameObjectsIdentifier = parts[2];
                         int serverID = int.Parse(parts[1]);
 
-                        tempLocalIDPair[gameObjectsIdentifier].ServerID = serverID;
+                        tempLocalIDPair[gameObjectsIdentifier].gameObjectData.ID = serverID;
                         Library.serverIDGameObjectPair.TryAdd(serverID, tempLocalIDPair[gameObjectsIdentifier]);
 
-                        tempLocalIDPair[gameObjectsIdentifier].tcs.SetResult(true); // Allows update to be called
+                        tempLocalIDPair[gameObjectsIdentifier].tcs.SetResult(true); // Enables update to be called
                         tempLocalIDPair.Remove(gameObjectsIdentifier);
 
                         break;
-                    case DataSent.GameObject:
-                        if (parts.Length != 5) // To ensure the right amount of parts was sent
+                    case DataSent.NewGameObject:
+                        if (parts.Length != GameObjectData.newGameObjectDataLength)
                         {
                             break;
                         }
@@ -163,8 +162,7 @@ namespace MineExploration
 
                         break;
                     case DataSent.Move:
-
-                        if (parts.Length != 4) // To ensure the right amount of parts was sent
+                        if (parts.Length != GameObjectData.moveDataLength)
                         {
                             break;
                         }
@@ -186,6 +184,20 @@ namespace MineExploration
                             toBeRemoved.Destroy();
                         }
                         break;
+                    case DataSent.Attack:
+                        if (parts.Length != GameObjectData.attackDataLength)
+                        {
+                            break;
+                        }
+
+                        GameObject gameObject = Library.serverIDGameObjectPair[int.Parse(parts[1])];
+
+                        if (gameObject is IDamageable d)
+                        {
+                            d.Damage(float.Parse(parts[2])); // TODO: Add knockback and other effects
+                        }
+
+                        break;
                     default:
                         break;
                 }
@@ -199,8 +211,8 @@ public enum DataSent
     ID,
     Move,
     Attack,
-    GameObject,
-    DestroyGameObject
+    NewGameObject,
+    DestroyGameObject,
 }
 
 public enum ServerCommands

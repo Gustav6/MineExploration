@@ -29,7 +29,7 @@ namespace MineExploration
 
             Texture = TextureManager.Textures[TextureIdentifier.Player];
             SpriteLayer = TextureManager.SpriteLayers[SpriteLayerIdentifier.Player];
-            Type = GameObjectType.Player;
+            gameObjectData.Type = GameObjectType.Player;
         }
 
         public override async Task Start()

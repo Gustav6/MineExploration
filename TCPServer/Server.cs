@@ -16,8 +16,6 @@ namespace MineExploration
         private readonly static Queue<int> availableIds = new();
         private static int nextObjectId = 1;
 
-        private Dictionary<int, GameObjectType> iDGameObjectTypePair = []; // Key: ID, Value: GameObject ID
-
         public bool IsRunning { get; private set; }
         private TcpListener listener;
 
