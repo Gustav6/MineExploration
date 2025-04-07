@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using TCPServer;
 using System.Collections.Concurrent;
 using Microsoft.Xna.Framework;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Diagnostics;
 
 namespace MineExploration
 {
@@ -20,9 +22,7 @@ namespace MineExploration
         public bool IsRunning { get; private set; }
         private TcpListener listener;
 
-        private string gameData;
-        private Dictionary<int, GameObjectType> iDGameObjectTypePair = [];
-        private Dictionary<int, Vector2> iDGameObjectPositionPair = [];
+        private static Dictionary<int, GameObjectServerData> gameObjects = [];
 
         #region ID handling
         public static int NewClientId()
@@ -43,6 +43,8 @@ namespace MineExploration
 
         public static void ReleaseID(int id)
         {
+            gameObjects.Remove(id);
+
             availableIds.Enqueue(id);
 
             Console.WriteLine($"[SERVER] Released id: [{id}]");
@@ -107,99 +109,139 @@ namespace MineExploration
                     ClientInfo? clientInfo = ClientManager.GetClient(clientId);
 
                     string messageReceived = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    string message;
+                    string serverMessage;
 
-                    // The index 0 in the variable below should withhold the "method"
-                    // This would mean that the message shall be formatted as "METHOD:DATA..."
-                    string[] parts = messageReceived.Split(':');
+                    string[] objectDataArray = messageReceived.Split(';');
 
-                    ServerCommands command = (ServerCommands)int.Parse(parts[0]);
-
-                    //Console.WriteLine($"[CLIENT] Client: { clientId } sent: [{ messageReceived }]"); // (For debugging)
-                    Console.WriteLine($"[CLIENT] Client: { clientId } sent command: { command } ");
-
-                    switch (command)
+                    foreach (string objectData in objectDataArray)
                     {
-                        case ServerCommands.FetchID: // For this command index 1 should be the game objects *temp id*
+                        if (string.IsNullOrWhiteSpace(objectData))
+                        {
+                            continue;
+                        }
 
-                            if (parts.Length != 3)
-                            {
+                        // The index 0 in the variable below should withhold the "method"
+                        // This would mean that the message shall be formatted as "METHOD:DATA..."
+                        string[] parts = objectData.Split(':');
+                        ServerCommands command;
+
+                        if (int.TryParse(parts.First(), out int parsedCommand))
+                        {
+                            command = (ServerCommands)parsedCommand;
+
+                        }
+                        else
+                        {
+                            continue;
+                        }
+
+                        //Console.WriteLine($"[CLIENT] Client: { clientId } sent: [{ messageReceived }]"); // (For debugging)
+                        Console.WriteLine($"[CLIENT] Client: {clientId} sent command: {command} ");
+
+                        switch (command)
+                        {
+                            case ServerCommands.FetchID: // For this command index 1 should be the game objects *temp id*
+
+                                if (parts.Length != 3)
+                                {
+                                    break;
+                                }
+
+                                int newId = NewClientId();
+                                serverMessage = $"{(int)DataSent.ID}:{newId}:{parts[1]}";
+
+                                byte[] responseBytes = Encoding.UTF8.GetBytes(serverMessage);
+
+                                if (clientInfo != null)
+                                {
+                                    ClientManager.SendMessage(serverMessage, clientInfo.Value);
+                                    clientInfo.Value.connectedIDS.Add(newId);
+                                }
+
+                                Console.WriteLine($"[SERVER] Sent: [{serverMessage}] to client: [{clientId}]");
                                 break;
-                            }
+                            case ServerCommands.ReleaseID:
+                                if (parts.Length != 2)
+                                {
+                                    break;
+                                }
 
-                            int newId = NewClientId();
-                            message = $"{(int)DataSent.ID}:{newId}:{parts[1]}";
-
-                            iDGameObjectTypePair.TryAdd(newId, (GameObjectType)int.Parse(parts[2]));
-
-                            byte[] responseBytes = Encoding.UTF8.GetBytes(message);
-
-                            if (clientInfo != null)
-                            {
-                                ClientManager.SendMessage(message, clientInfo.Value);
-                                clientInfo.Value.connectedIDS.Add(newId);
-                            }
-
-                            Console.WriteLine($"[SERVER] Sent: [{message}] to client: [{clientId}]");
-                            break;
-                        case ServerCommands.Echo:
-
-                            message = string.Join(":", parts.Skip(1));
-
-                            ClientManager.Echo(message, client);
-
-                            Console.WriteLine($"[SERVER] Echo: [{message}] from client: [{clientId}]");
-                            break;
-                        case ServerCommands.ReleaseID:
-                            if (parts.Length != 2)
-                            {
+                                ReleaseID(int.Parse(parts[1]));
                                 break;
-                            }
+                            case ServerCommands.Echo:
 
-                            ReleaseID(int.Parse(parts[1]));
-                            break;
-                        case ServerCommands.FetchGameData:
+                                serverMessage = string.Join(":", parts.Skip(1));
 
-                            if (clientInfo != null)
-                            {
-                                ClientManager.SendMessage(gameData, clientInfo.Value);
-                            }
+                                ClientManager.Echo(serverMessage, client);
 
-                            Console.WriteLine($"[SERVER] Sent: [{gameData}] to client: [{clientId}]");
-                            break;
-                        default:
-                            Console.WriteLine($"[ERROR] Unknown command: {command} sent from: [{clientId}] ");
-                            break;
-                    }
+                                // Set the gameData to the data sent to later send to the clients if needed
+                                if (int.TryParse(parts[1], out int value))
+                                {
+                                    DataSent dataSent = (DataSent)value;
+                                    int id;
+                                    Vector2 tempPosition;
 
-                    // Set the gameData to the data sent to later send to the clients if needed
-                    DataSent dataSent = (DataSent)int.Parse(parts[1]);
+                                    switch (dataSent)
+                                    {
+                                        case DataSent.Move:
+                                            id = int.Parse(parts[2]);
+                                            tempPosition = new(float.Parse(parts[3]), float.Parse(parts[4]));
 
-                    switch (dataSent)
-                    {
-                        case DataSent.Move:
-                            int id = int.Parse(parts[2]);
+                                            if (gameObjects.ContainsKey(id))
+                                            {
+                                                gameObjects[id].position = tempPosition;
+                                            }
+                                            break;
+                                        case DataSent.Mine:
+                                            break;
+                                        case DataSent.NewGameObject:
 
-                            if (!iDGameObjectTypePair.ContainsKey(id))
-                            {
-                                iDGameObjectPositionPair.Remove(id);
+                                            GameObjectType type = (GameObjectType)int.Parse(parts[3]);
+                                            id = int.Parse(parts[2]);
+                                            tempPosition = new(float.Parse(parts[4]), float.Parse(parts[5]));
+
+                                            if (!gameObjects.ContainsKey(id))
+                                            {
+                                                gameObjects.Add(id, new GameObjectServerData() { position = tempPosition, type = type });
+                                            }
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+
+                                Console.WriteLine($"[SERVER] Echo: [{serverMessage}] from client: [{clientId}]");
                                 break;
-                            }
+                            case ServerCommands.FetchGameData:
 
-                            if (iDGameObjectPositionPair.ContainsKey(id))
-                            {
-                                iDGameObjectPositionPair[id] = new Vector2();
-                            }
-                            else
-                            {
-                                iDGameObjectPositionPair.Add(id, new Vector2());
-                            }
+                                if (clientInfo == null)
+                                {
+                                    break;
+                                }
 
-                            break;
-                        case DataSent.Mine:
-                            break;
-                        default:
-                            break;
+                                serverMessage = "Empty;";
+
+                                foreach (int id in gameObjects.Keys)
+                                {
+                                    if (clientInfo.Value.connectedIDS.Contains(id))
+                                    {
+                                        continue;
+                                    }
+
+                                    serverMessage += $"{(int)DataSent.NewGameObject}:{id}:{(int)gameObjects[id].type}:{gameObjects[id].position.X}:{gameObjects[id].position.Y};";
+                                }
+
+                                if (clientInfo != null)
+                                {
+                                    ClientManager.SendMessage(serverMessage, clientInfo.Value);
+                                }
+
+                                Console.WriteLine($"[SERVER] Sent: [{serverMessage}] to client: [{clientId}]");
+                                break;
+                            default:
+                                Console.WriteLine($"[ERROR] Unknown command: {command} sent from: [{clientId}] ");
+                                break;
+                        }
                     }
                 }
             }
@@ -211,6 +253,12 @@ namespace MineExploration
             {
                 ClientManager.RemoveClient(clientId);
             }
+        }
+
+        public class GameObjectServerData()
+        {
+            public Vector2 position;
+            public GameObjectType type;
         }
     }
 }

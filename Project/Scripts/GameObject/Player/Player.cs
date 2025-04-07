@@ -21,11 +21,9 @@ namespace MineExploration
         public IDamageable.OnDeath RunOnDeath { get; set; }
         #endregion
 
-        private Vector2 spawnPoint;
-
         public Player(Vector2 position)
         {
-            spawnPoint = position;
+            Position = position;
 
             Texture = TextureManager.Textures[TextureIdentifier.Player];
             SpriteLayer = TextureManager.SpriteLayers[SpriteLayerIdentifier.Player];
@@ -36,11 +34,10 @@ namespace MineExploration
         {
             await base.Start();
 
+            UnlockMovement();
             movementSpeed = PlayerStats.BaseMovementSpeed;
             MaxHealth = PlayerStats.MaxHealth;
             Health = MaxHealth;
-
-            SetPosition(spawnPoint);
         }
 
         public override void Update(GameTime gameTime)
@@ -53,13 +50,13 @@ namespace MineExploration
             {
                 // Code below will set the tile that the mouse clicks on to null
 
-                Point Chunk = Vector2.Floor(Camera.PositionInWorld(MouseInput.CurrentState.Position.ToVector2()) / MapManager.tileSize / MapManager.chunkSize).ToPoint();
-                Vector2 tilePosition = Camera.PositionInWorld(MouseInput.CurrentState.Position.ToVector2()) / MapManager.tileSize;
-                Point tilePositionInChunk = (tilePosition - Chunk.ToVector2() * MapManager.chunkSize).ToPoint();
+                //Point Chunk = Vector2.Floor(Camera.PositionInWorld(MouseInput.CurrentState.Position.ToVector2()) / MapManager.tileSize / MapManager.chunkSize).ToPoint();
+                //Vector2 tilePosition = Camera.PositionInWorld(MouseInput.CurrentState.Position.ToVector2()) / MapManager.tileSize;
+                //Point tilePositionInChunk = (tilePosition - Chunk.ToVector2() * MapManager.chunkSize).ToPoint();
 
-                MapManager.SetTileInChunk(Chunk, tilePositionInChunk, null);
+                //MapManager.SetTileInChunk(Chunk, tilePositionInChunk, null);
 
-                ServerHandler.SendMessage($"{(int)ServerCommands.Echo}:{Chunk.X}:{Chunk.Y}:{tilePositionInChunk.X}:{tilePositionInChunk.Y}");
+                //ServerHandler.SendMessage($"{(int)ServerCommands.Echo}:{(int)DataSent.Mine}:{Chunk.X}:{Chunk.Y}:{tilePositionInChunk.X}:{tilePositionInChunk.Y}");
             }
         }
 

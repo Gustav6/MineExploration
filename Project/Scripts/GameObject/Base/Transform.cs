@@ -9,7 +9,7 @@ namespace MineExploration
 {
     public class Transform
     {
-        public Vector2 Position { get; private set; }
+        public Vector2 Position { get; protected set; }
         public float Rotation { get; private set; } = 0;
         public Vector2 Scale { get; private set; } = Vector2.One;
 

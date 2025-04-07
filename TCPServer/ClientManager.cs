@@ -102,7 +102,9 @@ namespace TCPServer
 
             if (stream.CanWrite)
             {
-                byte[] data = Encoding.UTF8.GetBytes(message);
+                string temp = message + ";";
+
+                byte[] data = Encoding.UTF8.GetBytes(temp);
                 stream.Write(data, 0, data.Length);
                 stream.FlushAsync();
             }

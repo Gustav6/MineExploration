@@ -3,11 +3,11 @@
     "Name": "Game + Server",
     "Projects": [
       {
-        "Path": "Project\\MineExploration.csproj",
+        "Path": "TCPServer\\TCPServer.csproj",
         "Action": "Start"
       },
       {
-        "Path": "TCPServer\\TCPServer.csproj",
+        "Path": "Project\\MineExploration.csproj",
         "Action": "Start"
       }
     ]

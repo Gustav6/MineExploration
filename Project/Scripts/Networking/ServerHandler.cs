@@ -41,6 +41,8 @@ namespace MineExploration
                     _ = Task.Run(ReceiveMessages);
 
                     Connected = true;
+
+                    SendMessage($"{(int)ServerCommands.FetchGameData}");
                 }
 
                 return true;
@@ -87,7 +89,9 @@ namespace MineExploration
                 return;
             }
 
-            byte[] messageBytes = Encoding.UTF8.GetBytes(message);
+            string temp = message + ";";
+
+            byte[] messageBytes = Encoding.UTF8.GetBytes(temp);
 
             stream.Write(messageBytes, 0, messageBytes.Length);
         }
@@ -112,8 +116,18 @@ namespace MineExploration
 
                 string[] parts = objectData.Split(':');
 
-                DataSent receivedData = (DataSent)int.Parse(parts[0]);
+                DataSent receivedData;
 
+                if (int.TryParse(parts.First(), out int parsedReceivedData))
+                {
+                    receivedData = (DataSent)parsedReceivedData;
+                }
+                else
+                {
+                    continue;
+                }
+
+                Console.WriteLine(receivedData);
 
                 int senderID, type;
                 Vector2 position;
@@ -126,8 +140,8 @@ namespace MineExploration
                             break;
                         }
 
-                        string gameObjectsIdentifier = parts[2];
                         int serverID = int.Parse(parts[1]);
+                        string gameObjectsIdentifier = parts[2];
 
                         tempLocalIDPair[gameObjectsIdentifier].serverData.ID = serverID;
                         Library.serverIDGameObjectPair.TryAdd(serverID, tempLocalIDPair[gameObjectsIdentifier]);
@@ -137,16 +151,14 @@ namespace MineExploration
 
                         break;
                     case DataSent.NewGameObject:
-                        if (parts.Length != GameObjectData.newGameObjectDataLength)
+                        if (parts.Length != GameObjectClientData.newGameObjectDataLength)
                         {
                             break;
                         }
 
                         senderID = int.Parse(parts[1]);
                         type = int.Parse(parts[2]);
-
                         position = new(float.Parse(parts[3]), float.Parse(parts[4]));
-
 
                         switch ((GameObjectType)type)
                         {
@@ -162,7 +174,7 @@ namespace MineExploration
 
                         break;
                     case DataSent.Move:
-                        if (parts.Length != GameObjectData.moveDataLength)
+                        if (parts.Length != GameObjectClientData.moveDataLength)
                         {
                             break;
                         }
@@ -175,6 +187,7 @@ namespace MineExploration
                         {
                             toBeMoved.SetPosition(position);
                         }
+
                         break;
                     case DataSent.DestroyGameObject:
                         senderID = int.Parse(parts[1]);
@@ -185,7 +198,7 @@ namespace MineExploration
                         }
                         break;
                     case DataSent.Attack:
-                        if (parts.Length != GameObjectData.attackDataLength)
+                        if (parts.Length != GameObjectClientData.attackDataLength)
                         {
                             break;
                         }

@@ -41,10 +41,16 @@ namespace MineExploration
 
         public static GameObject CreateServerGameObject(GameObject gameObject, int iD)
         {
-            serverIDGameObjectPair.Add(iD, gameObject);
+            if (serverIDGameObjectPair.ContainsKey(iD))
+            {
+                return null;
+            }
+
+            // !! SOMETHING GOES WRONG HERE !!  
+
+            serverIDGameObjectPair.TryAdd(iD, gameObject);
 
             gameObject.serverData.ID = iD;
-            gameObject.tcs.SetResult(true);
 
             serverGameObjects.Add(gameObject);
 

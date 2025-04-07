@@ -24,7 +24,7 @@ namespace MineExploration
 
         private void MoveGameObject(GameTime gameTime)
         {
-            if (MoveDirection == Vector2.Zero)
+            if (!CanMove || MoveDirection == Vector2.Zero)
             {
                 return;
             }
@@ -32,8 +32,16 @@ namespace MineExploration
             MoveDirection.Normalize();
 
             SetPosition(Position + (MoveDirection * movementSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds));
+        }
 
-            ServerHandler.SendMessage($"{(int)ServerCommands.Echo}:{serverData.MoveData}");
+        public override void SetPosition(Vector2 position)
+        {
+            base.SetPosition(position);
+
+            if (Library.localGameObjects.Contains(this))
+            {
+                ServerHandler.SendMessage($"{(int)ServerCommands.Echo}:{serverData.MoveData}");
+            }
         }
 
         public void LockMovement()

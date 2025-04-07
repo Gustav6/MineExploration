@@ -58,21 +58,46 @@ namespace MineExploration
                 }
             }
 
-            for (int i = Library.serverIDGameObjectPair.Keys.Count - 1; i >= 0; i--)
+            for (int i = Library.localGameObjects.Count - 1; i >= 0; i--)
             {
-                if (Library.serverIDGameObjectPair.ElementAt(i).Value.IsDestroyed)
+                if (Library.localGameObjects[i].IsDestroyed)
                 {
-                    Library.serverIDGameObjectPair.ElementAt(i).Value.RunOnDestroy();
-
-                    Library.serverGameObjects.Remove(Library.serverIDGameObjectPair.ElementAt(i).Value);
-                    Library.localGameObjects.Remove(Library.serverIDGameObjectPair.ElementAt(i).Value);
-
-                    Library.serverIDGameObjectPair.Remove(Library.serverIDGameObjectPair.ElementAt(i).Key);
+                    Library.localGameObjects[i].RunOnDestroy();
+                    Library.localGameObjects.RemoveAt(i);
+                    continue;
                 }
-                else if (Library.localGameObjects.Contains(Library.serverIDGameObjectPair.ElementAt(i).Value))
+
+                Library.localGameObjects[i].Update(gameTime);
+            }
+
+            for (int i = Library.serverGameObjects.Count - 1; i >= 0; i--)
+            {
+                if (Library.serverGameObjects[i].IsDestroyed)
                 {
-                    Library.localGameObjects[i].Update(gameTime);
+                    int idToRemove = Library.serverGameObjects[i].serverData.ID;
+
+                    Library.serverGameObjects[i].RunOnDestroy();
+                    Library.serverGameObjects.RemoveAt(i);
+
+                    Library.serverIDGameObjectPair.Remove(idToRemove);
                 }
+            }
+
+            //for (int i = Library.serverIDGameObjectPair.Keys.Count - 1; i >= 0; i--)
+            {
+                //if (Library.serverIDGameObjectPair.ElementAt(i).Value.IsDestroyed)
+                //{
+                //    Library.serverIDGameObjectPair.ElementAt(i).Value.RunOnDestroy();
+
+                //    Library.serverGameObjects.Remove(Library.serverIDGameObjectPair.ElementAt(i).Value);
+                //    Library.localGameObjects.Remove(Library.serverIDGameObjectPair.ElementAt(i).Value);
+
+                //    Library.serverIDGameObjectPair.Remove(Library.serverIDGameObjectPair.ElementAt(i).Key);
+                //}
+                //else if (Library.localGameObjects.Contains(Library.serverIDGameObjectPair.ElementAt(i).Value))
+                //{
+                //    Library.localGameObjects.ElementAt(i).Update(gameTime);
+                //}
             }
         }
 

@@ -20,24 +20,30 @@ namespace MineExploration
         public float SpriteLayer { get; protected set; } = TextureManager.SpriteLayers[SpriteLayerIdentifier.Default];
         #endregion
 
-        public GameObjectData serverData;
-        public bool IsDestroyed { get; private set; }
+        public GameObjectClientData serverData;
+        public bool IsDestroyed { get; private set; } = false;
 
         public TaskCompletionSource<bool> tcs = new();
         private bool canRun = false;
 
+        public GameObject()
+        {
+            serverData = new(this);
+        }
+
         public virtual async Task Start()
         {
-            await tcs.Task;
+            if (Library.localGameObjects.Contains(this))
+            {
+                await tcs.Task;
 
-            serverData = new(this);
+                ServerHandler.SendMessage($"{(int)ServerCommands.Echo}:{serverData.NewGameObjectData}");
+            }
 
             Origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
             Source = new Rectangle(0, 0, Texture.Width, Texture.Height);
 
             canRun = true;
-
-            ServerHandler.SendMessage($"{(int)ServerCommands.Echo}:{serverData.NewGameObjectData}");
         }
 
         public virtual void Update(GameTime gameTime)
@@ -65,7 +71,7 @@ namespace MineExploration
         }
     }
 
-    public struct GameObjectData(GameObject gameObject)
+    public struct GameObjectClientData(GameObject gameObject)
     {
         public int ID;
         public GameObjectType Type;
