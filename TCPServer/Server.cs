@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TCPServer;
 using System.Collections.Concurrent;
+using Microsoft.Xna.Framework;
 
 namespace MineExploration
 {
@@ -18,6 +19,10 @@ namespace MineExploration
 
         public bool IsRunning { get; private set; }
         private TcpListener listener;
+
+        private string gameData;
+        private Dictionary<int, GameObjectType> iDGameObjectTypePair = [];
+        private Dictionary<int, Vector2> iDGameObjectPositionPair = [];
 
         #region ID handling
         public static int NewClientId()
@@ -99,6 +104,8 @@ namespace MineExploration
                         break;
                     }
 
+                    ClientInfo? clientInfo = ClientManager.GetClient(clientId);
+
                     string messageReceived = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                     string message;
 
@@ -115,7 +122,7 @@ namespace MineExploration
                     {
                         case ServerCommands.FetchID: // For this command index 1 should be the game objects *temp id*
 
-                            if (parts.Length != 2)
+                            if (parts.Length != 3)
                             {
                                 break;
                             }
@@ -123,11 +130,10 @@ namespace MineExploration
                             int newId = NewClientId();
                             message = $"{(int)DataSent.ID}:{newId}:{parts[1]}";
 
-                            //iDGameObjectTypePair.TryAdd(newId, (GameObjectType)int.Parse(parts[2]));
+                            iDGameObjectTypePair.TryAdd(newId, (GameObjectType)int.Parse(parts[2]));
 
                             byte[] responseBytes = Encoding.UTF8.GetBytes(message);
 
-                            ClientInfo? clientInfo = ClientManager.GetClient(clientId);
                             if (clientInfo != null)
                             {
                                 ClientManager.SendMessage(message, clientInfo.Value);
@@ -152,8 +158,47 @@ namespace MineExploration
 
                             ReleaseID(int.Parse(parts[1]));
                             break;
+                        case ServerCommands.FetchGameData:
+
+                            if (clientInfo != null)
+                            {
+                                ClientManager.SendMessage(gameData, clientInfo.Value);
+                            }
+
+                            Console.WriteLine($"[SERVER] Sent: [{gameData}] to client: [{clientId}]");
+                            break;
                         default:
                             Console.WriteLine($"[ERROR] Unknown command: {command} sent from: [{clientId}] ");
+                            break;
+                    }
+
+                    // Set the gameData to the data sent to later send to the clients if needed
+                    DataSent dataSent = (DataSent)int.Parse(parts[1]);
+
+                    switch (dataSent)
+                    {
+                        case DataSent.Move:
+                            int id = int.Parse(parts[2]);
+
+                            if (!iDGameObjectTypePair.ContainsKey(id))
+                            {
+                                iDGameObjectPositionPair.Remove(id);
+                                break;
+                            }
+
+                            if (iDGameObjectPositionPair.ContainsKey(id))
+                            {
+                                iDGameObjectPositionPair[id] = new Vector2();
+                            }
+                            else
+                            {
+                                iDGameObjectPositionPair.Add(id, new Vector2());
+                            }
+
+                            break;
+                        case DataSent.Mine:
+                            break;
+                        default:
                             break;
                     }
                 }

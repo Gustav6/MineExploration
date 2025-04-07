@@ -21,6 +21,16 @@ namespace MineExploration
             {
                 ServerHandler.RequestIdFromServer(gameObject);
             }
+            else
+            {
+                Task.Delay(1000).ContinueWith(_ =>
+                {
+                    if (ServerHandler.Connected)
+                    {
+                        ServerHandler.RequestIdFromServer(gameObject);
+                    }
+                });
+            }
 
             localGameObjects.Add(gameObject);
 
@@ -33,7 +43,7 @@ namespace MineExploration
         {
             serverIDGameObjectPair.Add(iD, gameObject);
 
-            gameObject.gameObjectData.ID = iD;
+            gameObject.serverData.ID = iD;
             gameObject.tcs.SetResult(true);
 
             serverGameObjects.Add(gameObject);

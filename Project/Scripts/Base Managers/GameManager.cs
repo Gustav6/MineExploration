@@ -58,18 +58,6 @@ namespace MineExploration
                 }
             }
 
-            if (MouseInput.HasBeenPressed(MouseKeys.Left))
-            {
-                // Code below will set the tile that the mouse clicks on to null
-
-                Point Chunk = Vector2.Floor(Camera.PositionInWorld(MouseInput.CurrentState.Position.ToVector2()) / MapManager.tileSize / MapManager.chunkSize).ToPoint();
-                Vector2 tilePosition = Camera.PositionInWorld(MouseInput.CurrentState.Position.ToVector2()) / MapManager.tileSize;
-                Point tilePositionInChunk = (tilePosition - Chunk.ToVector2() * MapManager.chunkSize).ToPoint();
-
-                MapManager.SetTileInChunk(Chunk, tilePositionInChunk, null);
-            }
-
-
             for (int i = Library.serverIDGameObjectPair.Keys.Count - 1; i >= 0; i--)
             {
                 if (Library.serverIDGameObjectPair.ElementAt(i).Value.IsDestroyed)
@@ -80,10 +68,8 @@ namespace MineExploration
                     Library.localGameObjects.Remove(Library.serverIDGameObjectPair.ElementAt(i).Value);
 
                     Library.serverIDGameObjectPair.Remove(Library.serverIDGameObjectPair.ElementAt(i).Key);
-                    continue;
                 }
-
-                if (Library.localGameObjects.Contains(Library.serverIDGameObjectPair.ElementAt(i).Value))
+                else if (Library.localGameObjects.Contains(Library.serverIDGameObjectPair.ElementAt(i).Value))
                 {
                     Library.localGameObjects[i].Update(gameTime);
                 }

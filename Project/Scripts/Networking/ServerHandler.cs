@@ -96,7 +96,7 @@ namespace MineExploration
         {
             string tempID = Guid.NewGuid().ToString();
             tempLocalIDPair.TryAdd(tempID, gameObjectToAssign);
-            SendMessage($"{ (int)ServerCommands.FetchID }:{ tempID }");
+            SendMessage($"{(int)ServerCommands.FetchID}:{tempID}:{(int)gameObjectToAssign.serverData.Type}");
         }
 
         private static void ProcessReceivedData(string data)
@@ -129,7 +129,7 @@ namespace MineExploration
                         string gameObjectsIdentifier = parts[2];
                         int serverID = int.Parse(parts[1]);
 
-                        tempLocalIDPair[gameObjectsIdentifier].gameObjectData.ID = serverID;
+                        tempLocalIDPair[gameObjectsIdentifier].serverData.ID = serverID;
                         Library.serverIDGameObjectPair.TryAdd(serverID, tempLocalIDPair[gameObjectsIdentifier]);
 
                         tempLocalIDPair[gameObjectsIdentifier].tcs.SetResult(true); // Enables update to be called
@@ -198,6 +198,17 @@ namespace MineExploration
                         }
 
                         break;
+                    case DataSent.Mine:
+                        if (parts.Length != 5)
+                        {
+                            break;
+                        }
+
+                        Point Chunk = new(int.Parse(parts[1]), int.Parse(parts[2]));
+                        Point tilePositionInChunk = new(int.Parse(parts[3]), int.Parse(parts[4]));
+
+                        MapManager.SetTileInChunk(Chunk, tilePositionInChunk, null);
+                        break;
                     default:
                         break;
                 }
@@ -213,6 +224,7 @@ public enum DataSent
     Attack,
     NewGameObject,
     DestroyGameObject,
+    Mine,
 }
 
 public enum ServerCommands
@@ -220,4 +232,5 @@ public enum ServerCommands
     FetchID,
     ReleaseID,
     Echo,
+    FetchGameData
 }

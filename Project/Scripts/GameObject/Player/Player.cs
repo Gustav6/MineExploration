@@ -29,7 +29,7 @@ namespace MineExploration
 
             Texture = TextureManager.Textures[TextureIdentifier.Player];
             SpriteLayer = TextureManager.SpriteLayers[SpriteLayerIdentifier.Player];
-            gameObjectData.Type = GameObjectType.Player;
+            serverData.Type = GameObjectType.Player;
         }
 
         public override async Task Start()
@@ -48,6 +48,19 @@ namespace MineExploration
             base.Update(gameTime);
 
             MoveDirection = new Vector2(KeyboardInput.Horizontal(), KeyboardInput.Vertical());
+
+            if (MouseInput.HasBeenPressed(MouseKeys.Left))
+            {
+                // Code below will set the tile that the mouse clicks on to null
+
+                Point Chunk = Vector2.Floor(Camera.PositionInWorld(MouseInput.CurrentState.Position.ToVector2()) / MapManager.tileSize / MapManager.chunkSize).ToPoint();
+                Vector2 tilePosition = Camera.PositionInWorld(MouseInput.CurrentState.Position.ToVector2()) / MapManager.tileSize;
+                Point tilePositionInChunk = (tilePosition - Chunk.ToVector2() * MapManager.chunkSize).ToPoint();
+
+                MapManager.SetTileInChunk(Chunk, tilePositionInChunk, null);
+
+                ServerHandler.SendMessage($"{(int)ServerCommands.Echo}:{Chunk.X}:{Chunk.Y}:{tilePositionInChunk.X}:{tilePositionInChunk.Y}");
+            }
         }
 
         #region IDamageable related methods

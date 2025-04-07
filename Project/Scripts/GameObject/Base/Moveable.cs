@@ -33,7 +33,7 @@ namespace MineExploration
 
             SetPosition(Position + (MoveDirection * movementSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds));
 
-            ServerHandler.SendMessage($"{(int)ServerCommands.Echo}:{gameObjectData.MoveData}");
+            ServerHandler.SendMessage($"{(int)ServerCommands.Echo}:{serverData.MoveData}");
         }
 
         public void LockMovement()

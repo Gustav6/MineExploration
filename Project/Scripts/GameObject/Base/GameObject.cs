@@ -20,7 +20,7 @@ namespace MineExploration
         public float SpriteLayer { get; protected set; } = TextureManager.SpriteLayers[SpriteLayerIdentifier.Default];
         #endregion
 
-        public GameObjectData gameObjectData = new();
+        public GameObjectData serverData;
         public bool IsDestroyed { get; private set; }
 
         public TaskCompletionSource<bool> tcs = new();
@@ -30,12 +30,14 @@ namespace MineExploration
         {
             await tcs.Task;
 
-            ServerHandler.SendMessage($"{(int)ServerCommands.Echo}:{gameObjectData.NewGameObjectData}");
+            serverData = new(this);
 
             Origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
             Source = new Rectangle(0, 0, Texture.Width, Texture.Height);
 
             canRun = true;
+
+            ServerHandler.SendMessage($"{(int)ServerCommands.Echo}:{serverData.NewGameObjectData}");
         }
 
         public virtual void Update(GameTime gameTime)
@@ -51,10 +53,10 @@ namespace MineExploration
         {
             IsDestroyed = true;
 
-            //if (ServerHandler.Connected)
-            //{
-            //    ServerHandler.SendMessage($"{ (int)ServerCommands.ReleaseID }:{ ServerID }");
-            //}
+            if (Library.localGameObjects.Contains(this))
+            {
+                ServerHandler.SendMessage($"{(int)ServerCommands.ReleaseID}:{serverData.ID}");
+            }
         }
 
         public virtual void Draw(SpriteBatch spriteBatch)
@@ -63,36 +65,41 @@ namespace MineExploration
         }
     }
 
-    public struct GameObjectData
+    public struct GameObjectData(GameObject gameObject)
     {
         public int ID;
         public GameObjectType Type;
-        public Vector2 Position;
 
+        public const int moveDataLength = 4;
         public readonly string MoveData
         {
             get
             {
-                return $"{(int)DataSent.Move}:{ID}:{Position.X}:{Position.Y}";
+                return $"{(int)DataSent.Move}:{ID}:{gameObject.Position.X}:{gameObject.Position.Y}";
             }
         }
-        public const int moveDataLength = 4;
 
+        public const int newGameObjectDataLength = 5;
         public readonly string NewGameObjectData
         {
             get
             {
-                return $"{(int)DataSent.NewGameObject}:{ID}:{(int)Type}:{Position.X}:{Position.Y}";
+                return $"{(int)DataSent.NewGameObject}:{ID}:{(int)Type}:{gameObject.Position.X}:{gameObject.Position.Y}";
             }
 
         }
-        public const int newGameObjectDataLength = 5;
 
+        public const int attackDataLength = 3;
         public static string AttackData(int iDForAffected, float damageAmount)
         {
             return $"{(int)DataSent.Attack}:{iDForAffected}:{damageAmount}";
         }
-        public const int attackDataLength = 3;
+
+        public const int destroyDataLength = 3;
+        public static string DestroyData(int iDForAffected)
+        {
+            return $"{(int)DataSent.DestroyGameObject}:{iDForAffected}";
+        }
     }
 }
 
