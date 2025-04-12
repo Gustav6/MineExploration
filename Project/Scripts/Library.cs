@@ -13,13 +13,13 @@ namespace MineExploration
         public static Player playerInstance;
 
         public static List<GameObject> localGameObjects = [], serverGameObjects = [];
-        public static Dictionary<int, GameObject> serverIDGameObjectPair = [];
+        public static Dictionary<int, GameObject> IdentificationToGameObject = [];
 
         public static GameObject CreateLocalGameObject(GameObject gameObject)
         {
             if (ServerHandler.Connected)
             {
-                ServerHandler.RequestIdFromServer(gameObject);
+                ServerHandler.RequestIdentification(gameObject);
             }
             else
             {
@@ -27,7 +27,7 @@ namespace MineExploration
                 {
                     if (ServerHandler.Connected)
                     {
-                        ServerHandler.RequestIdFromServer(gameObject);
+                        ServerHandler.RequestIdentification(gameObject);
                     }
                 });
             }
@@ -39,18 +39,18 @@ namespace MineExploration
             return gameObject;
         }
 
-        public static GameObject CreateServerGameObject(GameObject gameObject, int iD)
+        public static GameObject CreateServerGameObject(GameObject gameObject, int identification)
         {
-            if (serverIDGameObjectPair.ContainsKey(iD))
+            if (IdentificationToGameObject.ContainsKey(identification))
             {
                 return null;
             }
 
             // !! SOMETHING GOES WRONG HERE !!  
 
-            serverIDGameObjectPair.TryAdd(iD, gameObject);
+            IdentificationToGameObject.TryAdd(identification, gameObject);
 
-            gameObject.serverData.ID = iD;
+            gameObject.serverData.identification = identification;
 
             serverGameObjects.Add(gameObject);
 

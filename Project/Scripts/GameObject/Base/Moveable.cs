@@ -40,7 +40,7 @@ namespace MineExploration
 
             if (Library.localGameObjects.Contains(this))
             {
-                ServerHandler.SendMessage($"{(int)ServerCommands.Echo}:{serverData.MoveData}");
+                ServerHandler.SendMessage($"{(int)ServerCommands.Echo}:{serverData.DataForMove}");
             }
         }
 

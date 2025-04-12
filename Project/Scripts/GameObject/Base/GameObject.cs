@@ -37,7 +37,7 @@ namespace MineExploration
             {
                 await tcs.Task;
 
-                ServerHandler.SendMessage($"{(int)ServerCommands.Echo}:{serverData.NewGameObjectData}");
+                ServerHandler.SendMessage($"{(int)ServerCommands.Echo}:{serverData.DataForNewGameObject}");
             }
 
             Origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
@@ -61,7 +61,7 @@ namespace MineExploration
 
             if (Library.localGameObjects.Contains(this))
             {
-                ServerHandler.SendMessage($"{(int)ServerCommands.ReleaseID}:{serverData.ID}");
+                ServerHandler.SendMessage($"{(int)ServerCommands.ReleaseIdentification}:{serverData.identification}");
             }
         }
 
@@ -73,38 +73,38 @@ namespace MineExploration
 
     public struct GameObjectClientData(GameObject gameObject)
     {
-        public int ID;
+        public int identification;
         public GameObjectType Type;
 
         public const int moveDataLength = 4;
-        public readonly string MoveData
+        public readonly string DataForMove
         {
             get
             {
-                return $"{(int)DataSent.Move}:{ID}:{gameObject.Position.X}:{gameObject.Position.Y}";
+                return $"{(int)DataSent.Move}:{identification}:{gameObject.Position.X}:{gameObject.Position.Y}";
             }
         }
 
         public const int newGameObjectDataLength = 5;
-        public readonly string NewGameObjectData
+        public readonly string DataForNewGameObject
         {
             get
             {
-                return $"{(int)DataSent.NewGameObject}:{ID}:{(int)Type}:{gameObject.Position.X}:{gameObject.Position.Y}";
+                return $"{(int)DataSent.NewGameObject}:{identification}:{(int)Type}:{gameObject.Position.X}:{gameObject.Position.Y}";
             }
 
         }
 
         public const int attackDataLength = 3;
-        public static string AttackData(int iDForAffected, float damageAmount)
+        public static string DataForAttack(int identificationForAffected, float damageAmount)
         {
-            return $"{(int)DataSent.Attack}:{iDForAffected}:{damageAmount}";
+            return $"{(int)DataSent.Attack}:{identificationForAffected}:{damageAmount}";
         }
 
         public const int destroyDataLength = 3;
-        public static string DestroyData(int iDForAffected)
+        public static string DataForDestroy(int identificationForAffected)
         {
-            return $"{(int)DataSent.DestroyGameObject}:{iDForAffected}";
+            return $"{(int)DataSent.DestroyGameObject}:{identificationForAffected}";
         }
     }
 }

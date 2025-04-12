@@ -16,56 +16,57 @@ namespace MineExploration
 {
     public class Server
     {
-        private readonly static Queue<int> availableIds = new();
-        private static int nextObjectId = 1;
+        #region Identification handling variables
+        private readonly static Queue<int> availableIdentifications = new();
+        private static int nextAvailableIdentification = 1;
+        #endregion
 
-        public bool IsRunning { get; private set; }
+        public const int bufferSize = 1024;
+
+        public bool Active { get; private set; }
         private TcpListener listener;
 
         private static Dictionary<int, GameObjectServerData> gameObjects = [];
 
-        #region ID handling
-        public static int NewClientId()
+        #region Identification handling
+        public static int NewGameObjectIdentification()
         {
-            int id;
-
-            if (availableIds.Count > 0)
+            if (availableIdentifications.Count > 0)
             {
-                id = availableIds.Dequeue();
+                return availableIdentifications.Dequeue();
             }
             else
             {
-                id = nextObjectId++; // Assign a new ID
+                return nextAvailableIdentification++; // Assign a new ID
             }
-
-            return id;
         }
 
-        public static void ReleaseID(int id)
+        public static void ReleaseIdentification(int identification)
         {
-            gameObjects.Remove(id);
+            gameObjects.Remove(identification);
 
-            availableIds.Enqueue(id);
+            availableIdentifications.Enqueue(identification);
 
-            Console.WriteLine($"[SERVER] Released id: [{id}]");
+            ConsoleServerMessage($"Released identification: [{identification}]");
         }
         #endregion
 
         #region Start and stop functions
-        public void Start(int port, IPAddress address)
+        public Task Start(int port, IPAddress address)
         {
             listener = new TcpListener(address, port);
             listener.Start();
-            IsRunning = true;
+            Active = true;
 
-            Console.WriteLine($"[SERVER] Server has started port on { port }, and using ip address { address }");
+            ConsoleServerMessage($"Server has started port on [{port}], using ip address: [{address}]");
 
             Task.Run(AcceptClients);
+            return Task.CompletedTask;
         }
 
         public void Stop()
         {
-            IsRunning = false;
+            Active = false;
             listener.Stop();
 
             foreach (var client in ClientManager.clients.Values)
@@ -79,7 +80,7 @@ namespace MineExploration
 
         private async Task AcceptClients()
         {
-            while (IsRunning)
+            while (Active)
             {
                 TcpClient client = await listener.AcceptTcpClientAsync();
                 
@@ -89,15 +90,17 @@ namespace MineExploration
 
         private async Task HandleClient(TcpClient client)
         {
-            string clientId = Guid.NewGuid().ToString();
-            ClientManager.AddClient(clientId, client);
+            string clientIdentification = Guid.NewGuid().ToString(); // Give a client an unique id
+            ClientManager.AddClient(clientIdentification, client);
+
+            ConsoleServerMessage($"Client: [{clientIdentification}] has connected. Client count: [{ClientManager.clients.Count}]");
 
             NetworkStream stream = client.GetStream();
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[bufferSize];
 
             try
             {
-                while (IsRunning)
+                while (Active)
                 {
                     int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
 
@@ -106,10 +109,10 @@ namespace MineExploration
                         break;
                     }
 
-                    ClientInfo? clientInfo = ClientManager.GetClient(clientId);
+                    ClientInfo? clientInfo = ClientManager.GetClient(clientIdentification);
 
                     string messageReceived = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    string serverMessage;
+                    string serverMessage = string.Empty;
 
                     string[] objectDataArray = messageReceived.Split(';');
 
@@ -135,38 +138,34 @@ namespace MineExploration
                             continue;
                         }
 
-                        //Console.WriteLine($"[CLIENT] Client: { clientId } sent: [{ messageReceived }]"); // (For debugging)
-                        Console.WriteLine($"[CLIENT] Client: {clientId} sent command: {command} ");
+                        ConsoleClientMessage($"Client: [{clientIdentification}] sent command: [{command}]");
 
                         switch (command)
                         {
-                            case ServerCommands.FetchID: // For this command index 1 should be the game objects *temp id*
+                            case ServerCommands.FetchIdentification: // For this command index 1 should be the game objects *temp identification*
 
-                                if (parts.Length != 3)
+                                if (parts.Length != 3 || clientInfo == null)
                                 {
                                     break;
                                 }
 
-                                int newId = NewClientId();
-                                serverMessage = $"{(int)DataSent.ID}:{newId}:{parts[1]}";
+                                int temp = NewGameObjectIdentification();
+                                serverMessage = $"{(int)DataSent.Identification}:{temp}:{parts[1]}";
 
                                 byte[] responseBytes = Encoding.UTF8.GetBytes(serverMessage);
 
-                                if (clientInfo != null)
-                                {
-                                    ClientManager.SendMessage(serverMessage, clientInfo.Value);
-                                    clientInfo.Value.connectedIDS.Add(newId);
-                                }
+                                ClientManager.SendMessage(serverMessage, clientInfo.Value);
+                                clientInfo.Value.attachedIdentifications.Add(temp);
 
-                                Console.WriteLine($"[SERVER] Sent: [{serverMessage}] to client: [{clientId}]");
+                                ConsoleServerMessage($"Sent: [{serverMessage}] to client: [{clientIdentification}]");
                                 break;
-                            case ServerCommands.ReleaseID:
+                            case ServerCommands.ReleaseIdentification:
                                 if (parts.Length != 2)
                                 {
                                     break;
                                 }
 
-                                ReleaseID(int.Parse(parts[1]));
+                                ReleaseIdentification(int.Parse(parts[1]));
                                 break;
                             case ServerCommands.Echo:
 
@@ -174,22 +173,23 @@ namespace MineExploration
 
                                 ClientManager.Echo(serverMessage, client);
 
-                                // Set the gameData to the data sent to later send to the clients if needed
+                                ConsoleServerMessage($"Echoed: [{serverMessage}] sent from client: [{clientIdentification}]");
+
                                 if (int.TryParse(parts[1], out int value))
                                 {
                                     DataSent dataSent = (DataSent)value;
-                                    int id;
+                                    int gameObjectsIdentification;
                                     Vector2 tempPosition;
 
                                     switch (dataSent)
                                     {
                                         case DataSent.Move:
-                                            id = int.Parse(parts[2]);
+                                            gameObjectsIdentification = int.Parse(parts[2]);
                                             tempPosition = new(float.Parse(parts[3]), float.Parse(parts[4]));
 
-                                            if (gameObjects.ContainsKey(id))
+                                            if (gameObjects.ContainsKey(gameObjectsIdentification))
                                             {
-                                                gameObjects[id].position = tempPosition;
+                                                gameObjects[gameObjectsIdentification].position = tempPosition;
                                             }
                                             break;
                                         case DataSent.Mine:
@@ -197,49 +197,41 @@ namespace MineExploration
                                         case DataSent.NewGameObject:
 
                                             GameObjectType type = (GameObjectType)int.Parse(parts[3]);
-                                            id = int.Parse(parts[2]);
+                                            gameObjectsIdentification = int.Parse(parts[2]);
                                             tempPosition = new(float.Parse(parts[4]), float.Parse(parts[5]));
 
-                                            if (!gameObjects.ContainsKey(id))
+                                            if (!gameObjects.ContainsKey(gameObjectsIdentification))
                                             {
-                                                gameObjects.Add(id, new GameObjectServerData() { position = tempPosition, type = type });
+                                                gameObjects.Add(gameObjectsIdentification, new GameObjectServerData() { position = tempPosition, type = type });
                                             }
                                             break;
                                         default:
                                             break;
                                     }
                                 }
-
-                                Console.WriteLine($"[SERVER] Echo: [{serverMessage}] from client: [{clientId}]");
                                 break;
                             case ServerCommands.FetchGameData:
-
                                 if (clientInfo == null)
                                 {
                                     break;
                                 }
 
-                                serverMessage = "Empty;";
-
-                                foreach (int id in gameObjects.Keys)
+                                foreach (int key in gameObjects.Keys)
                                 {
-                                    if (clientInfo.Value.connectedIDS.Contains(id))
+                                    if (clientInfo.Value.attachedIdentifications.Contains(key))
                                     {
                                         continue;
                                     }
 
-                                    serverMessage += $"{(int)DataSent.NewGameObject}:{id}:{(int)gameObjects[id].type}:{gameObjects[id].position.X}:{gameObjects[id].position.Y};";
+                                    serverMessage += $"{(int)DataSent.NewGameObject}:{key}:{(int)gameObjects[key].type}:{gameObjects[key].position.X}:{gameObjects[key].position.Y};";
                                 }
 
-                                if (clientInfo != null)
-                                {
-                                    ClientManager.SendMessage(serverMessage, clientInfo.Value);
-                                }
+                                ClientManager.SendMessage(serverMessage, clientInfo.Value);
 
-                                Console.WriteLine($"[SERVER] Sent: [{serverMessage}] to client: [{clientId}]");
+                                ConsoleServerMessage($"Sent: [{serverMessage}] to client: [{clientIdentification}]");
                                 break;
                             default:
-                                Console.WriteLine($"[ERROR] Unknown command: {command} sent from: [{clientId}] ");
+                                ConsoleErrorMessage($"Unknown command: {command} sent from: [{clientIdentification}]");
                                 break;
                         }
                     }
@@ -247,11 +239,11 @@ namespace MineExploration
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR] Client: [{ clientId }], { ex.Message }");
+                ConsoleErrorMessage($"Client: [{clientIdentification}], {ex.Message}");
             }
             finally
             {
-                ClientManager.RemoveClient(clientId);
+                ClientManager.RemoveClient(clientIdentification);
             }
         }
 
@@ -259,6 +251,25 @@ namespace MineExploration
         {
             public Vector2 position;
             public GameObjectType type;
+        }
+
+        public static void ConsoleServerMessage(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("[SERVER] " + message);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+        public static void ConsoleClientMessage(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("[CLIENT] " + message);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+        public static void ConsoleErrorMessage(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("[ERROR] " + message);
+            Console.ForegroundColor = ConsoleColor.White;
         }
     }
 }

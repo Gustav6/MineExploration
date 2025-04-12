@@ -18,49 +18,48 @@ namespace TCPServer
         /// <summary>
         /// Adds a new client to the dictionary.
         /// </summary>
-        public static void AddClient(string clientId, TcpClient tcpClient)
+        public static void AddClient(string clientIdentification, TcpClient tcpClient)
         {
-            var clientInfo = new ClientInfo(clientId, tcpClient);
+            var clientInfo = new ClientInfo(clientIdentification, tcpClient);
 
             lock (_lock)
             {
-                clients[clientId] = clientInfo;
+                clients[clientIdentification] = clientInfo;
             }
-
-            Console.WriteLine($"[SERVER] The client: { clientId } has connected. Total clients: { clients.Count }");
         }
 
         /// <summary>
         /// Removes a client by ID and closes its connection.
         /// </summary>
-        public static void RemoveClient(string clientId)
+        public static void RemoveClient(string clientIdentification)
         {
             lock (_lock)
             {
-                if (clients.TryGetValue(clientId, out var clientInfo))
+                if (clients.TryGetValue(clientIdentification, out var clientInfo))
                 {
-                    for (int i = 0; i < clientInfo.connectedIDS.Count; i++)
+                    for (int i = 0; i < clientInfo.attachedIdentifications.Count; i++)
                     {
-                        Echo($"{(int)DataSent.DestroyGameObject}:{clientInfo.connectedIDS[i]}", clientInfo.TcpClient);
-                        Server.ReleaseID(clientInfo.connectedIDS[i]);
+                        Echo($"{(int)DataSent.DestroyGameObject}:{clientInfo.attachedIdentifications[i]}", clientInfo.TcpClient);
+                        Server.ReleaseIdentification(clientInfo.attachedIdentifications[i]);
                     }
 
                     clientInfo.TcpClient.Close();
-                    clients.Remove(clientId);
+                    clients.Remove(clientIdentification);
 
-                    Console.WriteLine($"[SERVER] The client {clientId} has disconnected. Total clients: {clients.Count}");
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.WriteLine($"[SERVER] Client: [{clientIdentification}] has disconnected. Client count: [{clients.Count}]");
                 }
             }
         }
 
         /// <summary>
-        /// Gets the ClientInfo for a given client ID, or null if not found.
+        /// Gets the ClientInfo for a given client Identification, or null if not found.
         /// </summary>
-        public static ClientInfo? GetClient(string clientId)
+        public static ClientInfo? GetClient(string clientIdentification)
         {
             lock (_lock)
             {
-                if (clients.TryGetValue(clientId, out var clientInfo))
+                if (clients.TryGetValue(clientIdentification, out var clientInfo))
                 {
                     return clientInfo;
                 }
@@ -111,10 +110,10 @@ namespace TCPServer
         }
     }
 
-    public struct ClientInfo(string clientId, TcpClient tcpClient)
+    public struct ClientInfo(string clientIdentification, TcpClient client)
     {
-        public string ClientId { get; } = clientId;
-        public TcpClient TcpClient { get; } = tcpClient;
-        public List<int> connectedIDS = new();
+        public string ClientIdentification { get; } = clientIdentification;
+        public TcpClient TcpClient { get; } = client;
+        public List<int> attachedIdentifications = [];
     }
 }

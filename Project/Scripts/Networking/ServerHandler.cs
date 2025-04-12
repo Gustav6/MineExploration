@@ -17,7 +17,7 @@ namespace MineExploration
         private static NetworkStream stream;
         private static TcpClient client;
         public static bool Connected { get; private set; }
-        private static readonly Dictionary<string, GameObject> tempLocalIDPair = [];
+        private static readonly Dictionary<string, GameObject> tempIdentificationToGameObject = [];
 
         /// <summary>
         /// Tries to connect to the specified TCP server within a given timeout.
@@ -96,11 +96,11 @@ namespace MineExploration
             stream.Write(messageBytes, 0, messageBytes.Length);
         }
 
-        public static void RequestIdFromServer(GameObject gameObjectToAssign)
+        public static void RequestIdentification(GameObject gameObjectToAssign)
         {
-            string tempID = Guid.NewGuid().ToString();
-            tempLocalIDPair.TryAdd(tempID, gameObjectToAssign);
-            SendMessage($"{(int)ServerCommands.FetchID}:{tempID}:{(int)gameObjectToAssign.serverData.Type}");
+            string tempIdentification = Guid.NewGuid().ToString();
+            tempIdentificationToGameObject.TryAdd(tempIdentification, gameObjectToAssign);
+            SendMessage($"{(int)ServerCommands.FetchIdentification}:{tempIdentification}:{(int)gameObjectToAssign.serverData.Type}");
         }
 
         private static void ProcessReceivedData(string data)
@@ -129,25 +129,25 @@ namespace MineExploration
 
                 Console.WriteLine(receivedData);
 
-                int senderID, type;
+                int sendersIdentification, type;
                 Vector2 position;
 
                 switch (receivedData)
                 {
-                    case DataSent.ID:
+                    case DataSent.Identification:
                         if (parts.Length != 3) // To ensure the right amount of parts was sent
                         {
                             break;
                         }
 
-                        int serverID = int.Parse(parts[1]);
+                        int serversIdentification = int.Parse(parts[1]);
                         string gameObjectsIdentifier = parts[2];
 
-                        tempLocalIDPair[gameObjectsIdentifier].serverData.ID = serverID;
-                        Library.serverIDGameObjectPair.TryAdd(serverID, tempLocalIDPair[gameObjectsIdentifier]);
+                        tempIdentificationToGameObject[gameObjectsIdentifier].serverData.identification = serversIdentification;
+                        Library.IdentificationToGameObject.TryAdd(serversIdentification, tempIdentificationToGameObject[gameObjectsIdentifier]);
 
-                        tempLocalIDPair[gameObjectsIdentifier].tcs.SetResult(true); // Enables update to be called
-                        tempLocalIDPair.Remove(gameObjectsIdentifier);
+                        tempIdentificationToGameObject[gameObjectsIdentifier].tcs.SetResult(true); // Enables update to be called
+                        tempIdentificationToGameObject.Remove(gameObjectsIdentifier);
 
                         break;
                     case DataSent.NewGameObject:
@@ -156,14 +156,14 @@ namespace MineExploration
                             break;
                         }
 
-                        senderID = int.Parse(parts[1]);
+                        sendersIdentification = int.Parse(parts[1]);
                         type = int.Parse(parts[2]);
                         position = new(float.Parse(parts[3]), float.Parse(parts[4]));
 
                         switch ((GameObjectType)type)
                         {
                             case GameObjectType.Player:
-                                Library.CreateServerGameObject(new Player(position), senderID);
+                                Library.CreateServerGameObject(new Player(position), sendersIdentification);
                                 break;
                             case GameObjectType.Enemy:
                                 //Library.CreateServerGameObject(new Enemy(position), senderID);
@@ -179,20 +179,20 @@ namespace MineExploration
                             break;
                         }
 
-                        senderID = int.Parse(parts[1]);
+                        sendersIdentification = int.Parse(parts[1]);
 
                         position = new(float.Parse(parts[2]), float.Parse(parts[3]));
 
-                        if (Library.serverIDGameObjectPair.TryGetValue(senderID, out GameObject toBeMoved))
+                        if (Library.IdentificationToGameObject.TryGetValue(sendersIdentification, out GameObject toBeMoved))
                         {
                             toBeMoved.SetPosition(position);
                         }
 
                         break;
                     case DataSent.DestroyGameObject:
-                        senderID = int.Parse(parts[1]);
+                        sendersIdentification = int.Parse(parts[1]);
 
-                        if (Library.serverIDGameObjectPair.TryGetValue(senderID, out GameObject toBeRemoved))
+                        if (Library.IdentificationToGameObject.TryGetValue(sendersIdentification, out GameObject toBeRemoved))
                         {
                             toBeRemoved.Destroy();
                         }
@@ -203,7 +203,7 @@ namespace MineExploration
                             break;
                         }
 
-                        GameObject gameObject = Library.serverIDGameObjectPair[int.Parse(parts[1])];
+                        GameObject gameObject = Library.IdentificationToGameObject[int.Parse(parts[1])];
 
                         if (gameObject is IDamageable d)
                         {
@@ -232,7 +232,7 @@ namespace MineExploration
 
 public enum DataSent
 {
-    ID,
+    Identification,
     Move,
     Attack,
     NewGameObject,
@@ -242,8 +242,8 @@ public enum DataSent
 
 public enum ServerCommands
 {
-    FetchID,
-    ReleaseID,
+    FetchIdentification,
+    ReleaseIdentification,
     Echo,
     FetchGameData
 }
