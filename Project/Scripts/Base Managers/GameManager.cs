@@ -20,14 +20,7 @@ namespace MineExploration
 
             WindowManager.ChangeSize(800, 480);
 
-            _ = ServerHandler.TryToConnect("127.0.0.1", 13000, 1000);
-
-            Library.playerInstance = (Player)Library.CreateLocalGameObject(new Player(Vector2.Zero));
-            Library.MainCamera.SetTarget(Library.playerInstance);
-
-            //WindowManager.Fullscreen(true);
-
-            MapManager.Test();
+            SceneManager.ChangeScene(SceneManager.sceneRegistry[Scene.Game]);
         }
 
         public static void LoadContent(ContentManager content)
@@ -40,65 +33,14 @@ namespace MineExploration
             TransitionSystem.UpdateTransitions(gameTime);
             TimedEventSystem.UpdateTimers(gameTime);
             InputManager.UpdateInputStates();
-
-            if (KeyboardInput.IsPressed(Keys.F1))
-            {
-                if (Library.MainCamera != null)
-                {
-                    Library.MainCamera.Zoom -= 0.1f;
-                    Debug.WriteLine("Zoom out");
-                }
-            }
-            else if (KeyboardInput.IsPressed(Keys.F2))
-            {
-                if (Library.MainCamera != null)
-                {
-                    Library.MainCamera.Zoom += 0.1f;
-                    Debug.WriteLine("Zoom in");
-                }
-            }
-
-            for (int i = Library.localGameObjects.Count - 1; i >= 0; i--)
-            {
-                if (Library.localGameObjects[i].IsDestroyed)
-                {
-                    Library.localGameObjects[i].RunOnDestroy();
-                    Library.localGameObjects.RemoveAt(i);
-                    continue;
-                }
-
-                Library.localGameObjects[i].Update(gameTime);
-            }
-
-            for (int i = Library.serverGameObjects.Count - 1; i >= 0; i--)
-            {
-                if (Library.serverGameObjects[i].IsDestroyed)
-                {
-                    int identificationToDestroy = Library.serverGameObjects[i].serverData.identification;
-
-                    Library.serverGameObjects[i].RunOnDestroy();
-                    Library.serverGameObjects.RemoveAt(i);
-
-                    Library.IdentificationToGameObject.Remove(identificationToDestroy);
-                }
-            }
+            SceneManager.Update(gameTime);
         }
 
         public static void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, null, null, null, null, Library.MainCamera.Transform);
 
-            MapManager.DrawActiveChunks(spriteBatch);
-
-            for (int i = 0; i < Library.localGameObjects.Count; i++)
-            {
-                Library.localGameObjects[i].Draw(spriteBatch);
-            }
-
-            for (int i = 0; i < Library.serverGameObjects.Count; i++)
-            {
-                Library.serverGameObjects[i].Draw(spriteBatch);
-            }
+            SceneManager.Draw(spriteBatch);
 
             spriteBatch.End();
 

@@ -21,7 +21,6 @@ namespace MineExploration
         #endregion
 
         public GameObjectClientData serverData;
-        public bool IsDestroyed { get; private set; } = false;
 
         public TaskCompletionSource<bool> tcs = new();
         private bool canRun = false;
@@ -55,10 +54,8 @@ namespace MineExploration
         }
 
         public virtual void RunOnDestroy() { }
-        public void Destroy()
+        public override void Destroy()
         {
-            IsDestroyed = true;
-
             if (Library.localGameObjects.Contains(this))
             {
                 ServerHandler.SendMessage($"{(int)ServerCommands.ReleaseIdentification}:{serverData.identification}");

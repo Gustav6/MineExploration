@@ -34,21 +34,21 @@ namespace MineExploration
         {
             base.Start();
 
-            spriteRenderer.SetColor(Color.Lerp(startingColor, targetColor, t));
+            spriteRenderer.Color = Color.Lerp(startingColor, targetColor, t);
         }
 
         public override void OnInstantTransition()
         {
             base.OnInstantTransition();
 
-            spriteRenderer.SetColor(targetColor);
+            spriteRenderer.Color = targetColor;
         }
 
         public override void RunAfterTransition()
         {
             base.RunAfterTransition();
 
-            spriteRenderer.SetColor(targetColor);
+            spriteRenderer.Color = targetColor;
         }
     }
 }
