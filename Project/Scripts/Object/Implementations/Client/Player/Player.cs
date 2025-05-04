@@ -27,7 +27,8 @@ namespace MineExploration
 
             Texture = TextureManager.Textures[TextureIdentifier.Player];
             SpriteLayer = TextureManager.SpriteLayers[SpriteLayerIdentifier.Player];
-            serverData.Type = GameObjectType.Player;
+
+            ServerData = new() { Position = position, Type = GameObjectType.Player};
         }
 
         public override async Task Start()

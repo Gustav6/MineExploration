@@ -46,11 +46,9 @@ namespace MineExploration
                 return null;
             }
 
-            // !! SOMETHING GOES WRONG HERE !!  
-
             IdentificationToGameObject.TryAdd(identification, gameObject);
 
-            gameObject.serverData.identification = identification;
+            gameObject.ServerData.Identification = identification;
 
             serverGameObjects.Add(gameObject);
 

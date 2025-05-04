@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MineExploration
 {
-    internal class MainMenuScene : IScene
+    internal class ServerSelectionScene : IScene
     {
         public void LoadContent()
         {

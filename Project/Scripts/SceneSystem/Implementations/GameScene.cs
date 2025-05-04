@@ -62,7 +62,7 @@ namespace MineExploration
             {
                 if (Library.serverGameObjects[i].IsDestroyed)
                 {
-                    int identificationToDestroy = Library.serverGameObjects[i].serverData.identification;
+                    int identificationToDestroy = Library.serverGameObjects[i].ServerData.Identification;
 
                     Library.serverGameObjects[i].RunOnDestroy();
                     Library.serverGameObjects.RemoveAt(i);

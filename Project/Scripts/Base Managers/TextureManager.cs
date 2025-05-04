@@ -61,24 +61,24 @@ namespace MineExploration
             return texture;
         }
     }
-}
 
-public enum FontIdentifier
-{
-    DamageNumber,
-    Text
-}
+    public enum FontIdentifier
+    {
+        DamageNumber,
+        Text
+    }
 
-public enum TextureIdentifier
-{
-    Player,
-    Enemy
-}
+    public enum TextureIdentifier
+    {
+        Player,
+        Enemy
+    }
 
-public enum SpriteLayerIdentifier
-{
-    Default,
-    Player,
-    Hitbox,
-    UI
+    public enum SpriteLayerIdentifier
+    {
+        Default,
+        Player,
+        Hitbox,
+        UI
+    }
 }

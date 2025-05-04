@@ -12,7 +12,7 @@ namespace MineExploration
     {
         public static readonly Dictionary<Scene, IScene> sceneRegistry = new()
         {
-            { Scene.Main, new MainMenuScene() },
+            { Scene.Main, new ServerSelectionScene() },
             { Scene.Game, new GameScene() }
         };
 

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,6 +15,7 @@ namespace MineExploration
 {
     public static class ServerHandler
     {
+        private static readonly int bufferSize = 1024;
         private static NetworkStream stream;
         private static TcpClient client;
         public static bool Connected { get; private set; }
@@ -32,26 +34,22 @@ namespace MineExploration
             client = new TcpClient();
             try
             {
-                using (var cts = new CancellationTokenSource(timeoutMs))
-                {
-                    // Begin asynchronous connection
-                    await client.ConnectAsync(host, port).WaitAsync(cts.Token);
+                using var cts = new CancellationTokenSource(timeoutMs);
 
-                    stream = client.GetStream();
-                    _ = Task.Run(ReceiveMessages);
+                await client.ConnectAsync(host, port).WaitAsync(cts.Token);
 
-                    Connected = true;
+                stream = client.GetStream();
+                _ = Task.Run(ReceiveMessages);
 
-                    SendMessage($"{(int)ServerCommands.FetchGameData}");
-                }
+                Connected = true;
+
+                SendMessage($"{(int)ServerCommands.FetchGameData}");
 
                 return true;
             }
-            catch (Exception)
+            catch
             {
                 Disconnect();
-
-                Connected = true;
 
                 return false;
             }
@@ -66,11 +64,11 @@ namespace MineExploration
 
         private static async Task ReceiveMessages()
         {
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[bufferSize];
 
             while (true)
             {
-                int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
+                int bytesRead = await stream.ReadAsync(buffer);
 
                 if (client == null)
                 {
@@ -82,6 +80,10 @@ namespace MineExploration
             }
         }
 
+        /// <summary>
+        /// [Message Length][Message Type][Payload] (Message structure)
+        /// </summary>
+        /// <param name="message"></param>
         public static void SendMessage(string message)
         {
             if (stream == null || stream == NetworkStream.Null)
@@ -91,16 +93,16 @@ namespace MineExploration
 
             string temp = message + ";";
 
-            byte[] messageBytes = Encoding.UTF8.GetBytes(temp);
+            byte[] bytes = Encoding.UTF8.GetBytes(temp);
 
-            stream.Write(messageBytes, 0, messageBytes.Length);
+            stream.Write(bytes);
         }
 
         public static void RequestIdentification(GameObject gameObjectToAssign)
         {
             string tempIdentification = Guid.NewGuid().ToString();
             tempIdentificationToGameObject.TryAdd(tempIdentification, gameObjectToAssign);
-            SendMessage($"{(int)ServerCommands.FetchIdentification}:{tempIdentification}:{(int)gameObjectToAssign.serverData.Type}");
+            SendMessage($"{(int)ServerCommands.FetchIdentification}:{tempIdentification}:{(int)gameObjectToAssign.ServerData.Type}");
         }
 
         private static void ProcessReceivedData(string data)
@@ -116,54 +118,44 @@ namespace MineExploration
 
                 string[] parts = objectData.Split(':');
 
-                DataSent receivedData;
+                MessageType receivedData;
 
-                if (int.TryParse(parts.First(), out int parsedReceivedData))
+                if (!int.TryParse(parts.First(), out int parsed))
                 {
-                    receivedData = (DataSent)parsedReceivedData;
-                }
-                else
-                {
-                    continue;
+                    return;
                 }
 
-                Console.WriteLine(receivedData);
+                receivedData = (MessageType)parsed;
 
                 int sendersIdentification, type;
-                Vector2 position;
+                float positionX, positionY;
 
                 switch (receivedData)
                 {
-                    case DataSent.Identification:
-                        if (parts.Length != 3) // To ensure the right amount of parts was sent
+                    case MessageType.Identification:
+
+                        if (!int.TryParse(parts[1], out int serversIdentification))
                         {
-                            break;
+                            return;
                         }
 
-                        int serversIdentification = int.Parse(parts[1]);
                         string gameObjectsIdentifier = parts[2];
 
-                        tempIdentificationToGameObject[gameObjectsIdentifier].serverData.identification = serversIdentification;
+                        tempIdentificationToGameObject[gameObjectsIdentifier].ServerData.Identification = serversIdentification;
                         Library.IdentificationToGameObject.TryAdd(serversIdentification, tempIdentificationToGameObject[gameObjectsIdentifier]);
-
-                        tempIdentificationToGameObject[gameObjectsIdentifier].tcs.SetResult(true); // Enables update to be called
                         tempIdentificationToGameObject.Remove(gameObjectsIdentifier);
 
+                        Library.IdentificationToGameObject[serversIdentification].tcs.SetResult(true); // Enables update to be called
+
                         break;
-                    case DataSent.NewGameObject:
-                        if (parts.Length != GameObjectClientData.newGameObjectDataLength)
-                        {
-                            break;
-                        }
+                    case MessageType.NewGameObject:
 
-                        sendersIdentification = int.Parse(parts[1]);
-                        type = int.Parse(parts[2]);
-                        position = new(float.Parse(parts[3]), float.Parse(parts[4]));
+                        GameObjectServerData newGameObject = JsonSerializer.Deserialize<GameObjectServerData>(parts[1]);
 
-                        switch ((GameObjectType)type)
+                        switch (newGameObject.Type)
                         {
                             case GameObjectType.Player:
-                                Library.CreateServerGameObject(new Player(position), sendersIdentification);
+                                Library.CreateServerGameObject(new Player(newGameObject.Position), newGameObject.Identification);
                                 break;
                             case GameObjectType.Enemy:
                                 //Library.CreateServerGameObject(new Enemy(position), senderID);
@@ -173,35 +165,36 @@ namespace MineExploration
                         }
 
                         break;
-                    case DataSent.Move:
-                        if (parts.Length != GameObjectClientData.moveDataLength)
+                    case MessageType.Move:
+
+                        if (!int.TryParse(parts[1], out sendersIdentification))
                         {
-                            break;
+                            return;
                         }
 
-                        sendersIdentification = int.Parse(parts[1]);
-
-                        position = new(float.Parse(parts[2]), float.Parse(parts[3]));
+                        if (!float.TryParse(parts[3], out positionX) || !float.TryParse(parts[4], out positionY))
+                        {
+                            return;
+                        }
 
                         if (Library.IdentificationToGameObject.TryGetValue(sendersIdentification, out GameObject toBeMoved))
                         {
-                            toBeMoved.SetPosition(position);
+                            toBeMoved.SetPosition(new Vector2(positionX, positionY));
                         }
 
                         break;
-                    case DataSent.DestroyGameObject:
-                        sendersIdentification = int.Parse(parts[1]);
+                    case MessageType.DestroyGameObject:
+                        if (!int.TryParse(parts[1], out sendersIdentification))
+                        {
+                            return;
+                        }
 
                         if (Library.IdentificationToGameObject.TryGetValue(sendersIdentification, out GameObject toBeRemoved))
                         {
                             toBeRemoved.Destroy();
                         }
                         break;
-                    case DataSent.Attack:
-                        if (parts.Length != GameObjectClientData.attackDataLength)
-                        {
-                            break;
-                        }
+                    case MessageType.Attack:
 
                         GameObject gameObject = Library.IdentificationToGameObject[int.Parse(parts[1])];
 
@@ -211,7 +204,7 @@ namespace MineExploration
                         }
 
                         break;
-                    case DataSent.Mine:
+                    case MessageType.Mine:
                         if (parts.Length != 5)
                         {
                             break;
@@ -230,7 +223,7 @@ namespace MineExploration
     }
 }
 
-public enum DataSent
+public enum MessageType
 {
     Identification,
     Move,

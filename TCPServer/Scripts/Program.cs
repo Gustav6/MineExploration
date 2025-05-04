@@ -7,20 +7,18 @@ using TCPServer;
 
 class Program
 {
-    public static Server? ServerInstance { get; private set; }
-
     static async Task Main()
     {
-        Console.Title = "TCP Server"; // Set window title
+        Console.Title = "TCP Server";
 
-        ServerInstance = new();
+        Server serverInstance = new();
 
         await Task.Run(() =>
         {
-            ServerInstance.Start(13000, IPAddress.Parse("127.0.0.1"));
+            serverInstance.Start(13000, IPAddress.Parse("127.0.0.1"));
         });
 
-        while (ServerInstance.Active)
+        while (serverInstance.Active)
         {
             await Task.Delay(100);
         }
