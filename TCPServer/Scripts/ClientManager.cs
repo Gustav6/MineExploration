@@ -1,12 +1,5 @@
-﻿using Microsoft.Xna.Framework.Input;
-using MineExploration;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace TCPServer
 {
@@ -42,14 +35,11 @@ namespace TCPServer
                     for (int i = 0; i < clientInfo.attachedIdentifications.Count; i++)
                     {
                         Echo($"{(int)MessageType.DestroyGameObject}:{clientInfo.attachedIdentifications[i]}", clientInfo.TcpClient);
-                        Server.ReleaseIdentification(clientInfo.attachedIdentifications[i]);
+                        ObjectHandler.ReleaseIdentification(clientInfo.attachedIdentifications[i]);
                     }
 
                     clientInfo.TcpClient.Close();
                     clients.Remove(clientIdentification);
-
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.WriteLine($"[SERVER] Client: [{clientIdentification}] has disconnected. Client count: [{clients.Count}]");
                 }
             }
         }
@@ -101,14 +91,13 @@ namespace TCPServer
 
             NetworkStream stream = clientInfo.TcpClient.GetStream();
 
-            if (stream.CanWrite)
+            if (!stream.CanWrite)
             {
-                string temp = message + ";";
-
-                byte[] data = Encoding.UTF8.GetBytes(temp);
-                stream.Write(data, 0, data.Length);
-                stream.FlushAsync();
+                return;
             }
+
+            stream.Write(Encoding.UTF8.GetBytes(message + ";"));
+            stream.FlushAsync();
         }
     }
 
@@ -117,5 +106,7 @@ namespace TCPServer
         public string Identification { get; } = clientIdentification;
         public TcpClient TcpClient { get; } = client;
         public List<int> attachedIdentifications = [];
+
+        public readonly bool IsConnected => TcpClient != null && TcpClient.Connected;
     }
 }

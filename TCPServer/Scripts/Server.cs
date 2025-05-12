@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using System.Net;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using TCPServer;
-using System.Collections.Concurrent;
-using Microsoft.Xna.Framework;
-using System.Diagnostics;
 using System.Text.Json;
 
-namespace MineExploration
+namespace TCPServer
 {
     public class Server
     {
@@ -21,11 +12,6 @@ namespace MineExploration
         private readonly int bufferSize = 1024;
         private TcpListener listener;
 
-        private static readonly Dictionary<int, GameObjectServerData> gameObjects = [];
-
-        private readonly static Queue<int> availableIdentifications = new();
-        private static int nextAvailableIdentification = 1;
-
 
         public Task Start(int port, IPAddress address)
         {
@@ -33,7 +19,7 @@ namespace MineExploration
             listener.Start();
             Active = true;
 
-            ConsoleServerMessage($"Server has started port on [{port}], using ip address: [{address}]");
+            Log($"Started, port: [{port}], ip address: [{address}]", LogType.Server);
 
             Task.Run(AcceptClients);
             return Task.CompletedTask;
@@ -61,7 +47,7 @@ namespace MineExploration
                 string clientIdentification = Guid.NewGuid().ToString(); // Give a client a unique id
                 Client client = ClientManager.AddClient(clientIdentification, tcpClient);
 
-                ConsoleServerMessage($"Client: [{clientIdentification}] has connected. Client count: [{ClientManager.clients.Count}]");
+                Log($"Client: [{clientIdentification}] has connected. Client count: [{ClientManager.clients.Count}]", LogType.Server);
 
                 _ = Task.Run(async () =>
                 {
@@ -69,9 +55,9 @@ namespace MineExploration
                     {
                         await HandleClient(client);
                     }
-                    catch (Exception ex)
+                    catch (Exception exception)
                     {
-                        ConsoleErrorMessage($"Client: [{client.Identification}], {ex.Message}");
+                        Log($"Exception: ({exception.Message}), orignates from: [{client.Identification}]", LogType.Error);
                     }
                     finally
                     {
@@ -86,17 +72,20 @@ namespace MineExploration
             NetworkStream stream = client.TcpClient.GetStream();
             byte[] buffer = new byte[bufferSize];
 
-            // [Message Length][Message Type][Payload] (Message structure)
-
-            while (Active)
+            while (client.IsConnected)
             {
                 int bytesRead = await stream.ReadAsync(buffer);
 
-                if (bytesRead == 0) // Client disconnected
+                if (bytesRead == 0)
                 {
-                    break;
+                    break; // Client disconnected
                 }
 
+                byte[] data = new byte[bytesRead];
+                Array.Copy(buffer, data, bytesRead);
+                PayloadHandler.HandlePayload(data, client);
+
+                /*
                 string messageReceived = Encoding.UTF8.GetString(buffer);
                 string serverResponse = string.Empty;
 
@@ -181,46 +170,38 @@ namespace MineExploration
                             ConsoleErrorMessage($"Unknown command: [{command}] sent from: [{client.Identification}]");
                             break;
                     }
-                }
+                }*/
             }
         }
 
-        public static int NewGameObjectIdentification()
+        public static void Log(string message, LogType logType)
         {
-            if (availableIdentifications.Count > 0)
+            Console.Write($"[{DateTime.Now:HH:mm:ss}]");
+
+            switch (logType)
             {
-                return availableIdentifications.Dequeue();
+                case LogType.Client:
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    break;
+                case LogType.Server:
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    break;
+                case LogType.Error:
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    break;
+                default:
+                    break;
             }
 
-            return nextAvailableIdentification++; // Assign a new ID
-        }
-
-        public static void ReleaseIdentification(int identification)
-        {
-            gameObjects.Remove(identification);
-
-            availableIdentifications.Enqueue(identification);
-
-            ConsoleServerMessage($"Released identification: [{identification}]");
-        }
-
-        public static void ConsoleServerMessage(string message)
-        {
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("[SERVER] " + message);
+            Console.WriteLine($"[{logType}] {message}");
             Console.ForegroundColor = ConsoleColor.White;
         }
-        public static void ConsoleClientMessage(string message)
-        {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("[CLIENT] " + message);
-            Console.ForegroundColor = ConsoleColor.White;
-        }
-        public static void ConsoleErrorMessage(string message)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("[ERROR] " + message);
-            Console.ForegroundColor = ConsoleColor.White;
-        }
+    }
+
+    public enum LogType
+    {
+        Client,
+        Server,
+        Error
     }
 }
