@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using ServerToGame;
 
 namespace TCPServer
 {
@@ -9,7 +10,7 @@ namespace TCPServer
         private readonly static Queue<int> availableIdentifications = new();
         private static int nextAvailableIdentification = 1;
 
-        public static Object CreateObject(ObjectType type, Vector2 position, Vector2 size)
+        public static Object CreateObject(ObjectType type, Vec2 position, Vec2 size)
         {
             Object obj = new(GetObjectIdentification(), type, position, size);
 

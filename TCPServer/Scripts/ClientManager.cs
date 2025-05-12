@@ -1,5 +1,6 @@
 ﻿using System.Net.Sockets;
 using System.Text;
+using ServerToGame;
 
 namespace TCPServer
 {
@@ -32,11 +33,11 @@ namespace TCPServer
             {
                 if (clients.TryGetValue(clientIdentification, out var clientInfo))
                 {
-                    for (int i = 0; i < clientInfo.attachedIdentifications.Count; i++)
-                    {
-                        Echo($"{(int)MessageType.DestroyGameObject}:{clientInfo.attachedIdentifications[i]}", clientInfo.TcpClient);
-                        ObjectHandler.ReleaseIdentification(clientInfo.attachedIdentifications[i]);
-                    }
+                    //for (int i = 0; i < clientInfo.attachedIdentifications.Count; i++)
+                    //{
+                    //    Echo($"{(int)MessageType.DestroyGameObject}:{clientInfo.attachedIdentifications[i]}", clientInfo.TcpClient);
+                    //    ObjectHandler.ReleaseIdentification(clientInfo.attachedIdentifications[i]);
+                    //}
 
                     clientInfo.TcpClient.Close();
                     clients.Remove(clientIdentification);

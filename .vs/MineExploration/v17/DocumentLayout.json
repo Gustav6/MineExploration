@@ -3,26 +3,6 @@
   "WorkspaceRootPath": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|c:\\users\\gustav.ekstrom1\\documents\\github\\mineexploration\\mineexploration\\tcpserver\\scripts\\payloadhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|solutionrelative:tcpserver\\scripts\\payloadhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|c:\\users\\gustav.ekstrom1\\documents\\github\\mineexploration\\mineexploration\\tcpserver\\scripts\\message.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|solutionrelative:tcpserver\\scripts\\message.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|c:\\users\\gustav.ekstrom1\\documents\\github\\mineexploration\\mineexploration\\tcpserver\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|solutionrelative:tcpserver\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|c:\\users\\gustav.ekstrom1\\documents\\github\\mineexploration\\mineexploration\\tcpserver\\scripts\\server.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|solutionrelative:tcpserver\\scripts\\server.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{670C7200-395B-45DE-BBFC-FD157FDFE7D6}|Project\\MineExploration.csproj|c:\\users\\gustav.ekstrom1\\documents\\github\\mineexploration\\mineexploration\\project\\scripts\\networking\\serverhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{670C7200-395B-45DE-BBFC-FD157FDFE7D6}|Project\\MineExploration.csproj|solutionrelative:project\\scripts\\networking\\serverhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|c:\\users\\gustav.ekstrom1\\documents\\github\\mineexploration\\mineexploration\\tcpserver\\scripts\\object.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|solutionrelative:tcpserver\\scripts\\object.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -31,12 +11,40 @@
       "RelativeMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|solutionrelative:tcpserver\\scripts\\objecthandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|c:\\users\\gustav.ekstrom1\\documents\\github\\mineexploration\\mineexploration\\tcpserver\\scripts\\collisionhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|solutionrelative:tcpserver\\scripts\\collisionhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C58DC03A-D85A-4AE9-A162-5B26BD8B00B0}|ServerToGame\\ServerToGame.csproj|c:\\users\\gustav.ekstrom1\\documents\\github\\mineexploration\\mineexploration\\servertogame\\messagepayload.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C58DC03A-D85A-4AE9-A162-5B26BD8B00B0}|ServerToGame\\ServerToGame.csproj|solutionrelative:servertogame\\messagepayload.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C58DC03A-D85A-4AE9-A162-5B26BD8B00B0}|ServerToGame\\ServerToGame.csproj|c:\\users\\gustav.ekstrom1\\documents\\github\\mineexploration\\mineexploration\\servertogame\\networkmessage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C58DC03A-D85A-4AE9-A162-5B26BD8B00B0}|ServerToGame\\ServerToGame.csproj|solutionrelative:servertogame\\networkmessage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C58DC03A-D85A-4AE9-A162-5B26BD8B00B0}|ServerToGame\\ServerToGame.csproj|c:\\users\\gustav.ekstrom1\\documents\\github\\mineexploration\\mineexploration\\servertogame\\helpertypes.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C58DC03A-D85A-4AE9-A162-5B26BD8B00B0}|ServerToGame\\ServerToGame.csproj|solutionrelative:servertogame\\helpertypes.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|c:\\users\\gustav.ekstrom1\\documents\\github\\mineexploration\\mineexploration\\tcpserver\\scripts\\payloadhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|solutionrelative:tcpserver\\scripts\\payloadhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|c:\\users\\gustav.ekstrom1\\documents\\github\\mineexploration\\mineexploration\\tcpserver\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|solutionrelative:tcpserver\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{670C7200-395B-45DE-BBFC-FD157FDFE7D6}|Project\\MineExploration.csproj|c:\\users\\gustav.ekstrom1\\documents\\github\\mineexploration\\mineexploration\\project\\scripts\\networking\\serverhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{670C7200-395B-45DE-BBFC-FD157FDFE7D6}|Project\\MineExploration.csproj|solutionrelative:project\\scripts\\networking\\serverhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|c:\\users\\gustav.ekstrom1\\documents\\github\\mineexploration\\mineexploration\\tcpserver\\scripts\\clientmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|solutionrelative:tcpserver\\scripts\\clientmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|c:\\users\\gustav.ekstrom1\\documents\\github\\mineexploration\\mineexploration\\tcpserver\\scripts\\collisionhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|solutionrelative:tcpserver\\scripts\\collisionhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|c:\\users\\gustav.ekstrom1\\documents\\github\\mineexploration\\mineexploration\\tcpserver\\scripts\\server.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{34367502-0F57-4034-8ADC-81C26791C20C}|TCPServer\\TCPServer.csproj|solutionrelative:tcpserver\\scripts\\server.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -46,7 +54,7 @@
       "DocumentGroups": [
         {
           "DockedHeight": 224,
-          "SelectedChildIndex": 11,
+          "SelectedChildIndex": 17,
           "Children": [
             {
               "$type": "Bookmark",
@@ -87,103 +95,129 @@
             {
               "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "MessagePayload.cs",
+              "DocumentMoniker": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\ServerToGame\\MessagePayload.cs",
+              "RelativeDocumentMoniker": "ServerToGame\\MessagePayload.cs",
+              "ToolTip": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\ServerToGame\\MessagePayload.cs",
+              "RelativeToolTip": "ServerToGame\\MessagePayload.cs",
+              "ViewState": "AgIAACgAAAAAAAAAAAAkwEAAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-12T10:47:22.986Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "NetworkMessage.cs",
+              "DocumentMoniker": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\ServerToGame\\NetworkMessage.cs",
+              "RelativeDocumentMoniker": "ServerToGame\\NetworkMessage.cs",
+              "ToolTip": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\ServerToGame\\NetworkMessage.cs",
+              "RelativeToolTip": "ServerToGame\\NetworkMessage.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-12T10:44:34.628Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "HelperTypes.cs",
+              "DocumentMoniker": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\ServerToGame\\HelperTypes.cs",
+              "RelativeDocumentMoniker": "ServerToGame\\HelperTypes.cs",
+              "ToolTip": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\ServerToGame\\HelperTypes.cs",
+              "RelativeToolTip": "ServerToGame\\HelperTypes.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-12T10:41:46.269Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\TCPServer\\Program.cs",
               "RelativeDocumentMoniker": "TCPServer\\Program.cs",
               "ToolTip": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\TCPServer\\Program.cs",
               "RelativeToolTip": "TCPServer\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAABmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-12T09:19:41.259Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 7,
               "Title": "ServerHandler.cs",
               "DocumentMoniker": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\Project\\Scripts\\Networking\\ServerHandler.cs",
               "RelativeDocumentMoniker": "Project\\Scripts\\Networking\\ServerHandler.cs",
               "ToolTip": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\Project\\Scripts\\Networking\\ServerHandler.cs",
               "RelativeToolTip": "Project\\Scripts\\Networking\\ServerHandler.cs",
-              "ViewState": "AgIAABwAAAAAAAAAAAAkwE4AAAAjAAAAAAAAAA==",
+              "ViewState": "AgIAAGkAAAAAAAAAAAAuwE4AAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-12T09:06:15.152Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 5,
               "Title": "PayloadHandler.cs",
               "DocumentMoniker": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\TCPServer\\Scripts\\PayloadHandler.cs",
               "RelativeDocumentMoniker": "TCPServer\\Scripts\\PayloadHandler.cs",
               "ToolTip": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\TCPServer\\Scripts\\PayloadHandler.cs",
               "RelativeToolTip": "TCPServer\\Scripts\\PayloadHandler.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAwAAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-12T08:07:58.046Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Message.cs",
-              "DocumentMoniker": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\TCPServer\\Scripts\\Message.cs",
-              "RelativeDocumentMoniker": "TCPServer\\Scripts\\Message.cs",
-              "ToolTip": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\TCPServer\\Scripts\\Message.cs",
-              "RelativeToolTip": "TCPServer\\Scripts\\Message.cs",
-              "ViewState": "AgIAADwAAAAAAAAAAAAuwFcAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-07T08:00:23.351Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 10,
               "Title": "Server.cs",
               "DocumentMoniker": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\TCPServer\\Scripts\\Server.cs",
               "RelativeDocumentMoniker": "TCPServer\\Scripts\\Server.cs",
               "ToolTip": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\TCPServer\\Scripts\\Server.cs",
               "RelativeToolTip": "TCPServer\\Scripts\\Server.cs",
-              "ViewState": "AgIAADsAAAAAAAAAAAAUwFAAAAAxAAAAAAAAAA==",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAAAFAAAAAxAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-07T07:58:28.052Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 1,
               "Title": "ObjectHandler.cs",
               "DocumentMoniker": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\TCPServer\\Scripts\\ObjectHandler.cs",
               "RelativeDocumentMoniker": "TCPServer\\Scripts\\ObjectHandler.cs",
               "ToolTip": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\TCPServer\\Scripts\\ObjectHandler.cs",
               "RelativeToolTip": "TCPServer\\Scripts\\ObjectHandler.cs",
-              "ViewState": "AgIAABMAAAAAAAAAAAAkwAAAAAAeAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-07T07:54:04.849Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 0,
               "Title": "Object.cs",
               "DocumentMoniker": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\TCPServer\\Scripts\\Object.cs",
               "RelativeDocumentMoniker": "TCPServer\\Scripts\\Object.cs",
               "ToolTip": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\TCPServer\\Scripts\\Object.cs",
               "RelativeToolTip": "TCPServer\\Scripts\\Object.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABUAAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-07T07:54:02.85Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 9,
               "Title": "CollisionHandler.cs",
               "DocumentMoniker": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\TCPServer\\Scripts\\CollisionHandler.cs",
               "RelativeDocumentMoniker": "TCPServer\\Scripts\\CollisionHandler.cs",
               "ToolTip": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\TCPServer\\Scripts\\CollisionHandler.cs",
               "RelativeToolTip": "TCPServer\\Scripts\\CollisionHandler.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAsAAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-07T07:54:00.85Z",
               "EditorCaption": ""
@@ -196,7 +230,7 @@
               "RelativeDocumentMoniker": "TCPServer\\Scripts\\ClientManager.cs",
               "ToolTip": "C:\\Users\\gustav.ekstrom1\\Documents\\Github\\MineExploration\\MineExploration\\TCPServer\\Scripts\\ClientManager.cs",
               "RelativeToolTip": "TCPServer\\Scripts\\ClientManager.cs",
-              "ViewState": "AgIAAAUAAAAAAAAAAAA0wAcAAAAwAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAASAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-07T07:53:59.367Z",
               "EditorCaption": ""

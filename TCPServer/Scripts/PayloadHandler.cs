@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ServerToGame;
 
 namespace TCPServer
 {
@@ -11,7 +12,7 @@ namespace TCPServer
 
         public static void HandlePayload(byte[] data, Client client)
         {
-            Message message = Message.FromBytes(data);
+            NetworkMessage message = NetworkMessage.FromBytes(data);
 
             switch (message.Type)
             {

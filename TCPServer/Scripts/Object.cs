@@ -1,18 +1,18 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ServerToGame;
 
 namespace TCPServer
 {
-    public class Object(int id, ObjectType type, Vector2 position, Vector2 size)
+    public class Object(int id, ObjectType type, Vec2 position, Vec2 size)
     {
         public int Id { get => id; }
         public ObjectType Type { get => type; }
-        public Vector2 Position { get; set; } = position;
-        public Vector2 Size { get; set; } = size;
+        public Vec2 Position { get; set; } = position;
+        public Vec2 Size { get; set; } = size;
         public RectangleF BoundingBox => new(Position.X, Position.Y, Size.X, Size.Y);
     }
 
