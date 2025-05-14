@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using ServerToGame;
 using System;
 
 namespace MineExploration
@@ -11,21 +12,18 @@ namespace MineExploration
         public bool IsDestroyed { get; private set; } = false;
 
         public event EventHandler OnPositionChanged;
-
         public virtual void SetPosition(Vector2 position)
         {
             Position = position;
             OnPositionChanged?.Invoke(this, EventArgs.Empty);
         }
 
+
         public virtual void SetRotation(float rotation) => Rotation = rotation;
         public virtual void SetScale(Vector2 scale) => Scale = scale;
 
         public virtual void Rotate(float rotation) => Rotation += rotation;
 
-        public virtual void Destroy()
-        {
-            IsDestroyed = true;
-        }
+        public virtual void RunOnDestroy() { }
     }
 }

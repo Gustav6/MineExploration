@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using ServerToGame;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -41,13 +42,6 @@ namespace MineExploration
             spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, null, null, null, null, Library.MainCamera.Transform);
 
             SceneManager.Draw(spriteBatch);
-
-            spriteBatch.End();
-
-            spriteBatch.Begin();
-
-            spriteBatch.DrawString(TextureManager.Fonts[FontIdentifier.Text], "Local game objects: " + Library.localGameObjects.Count, Vector2.Zero, Color.Green, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, TextureManager.SpriteLayers[SpriteLayerIdentifier.UI]);
-            spriteBatch.DrawString(TextureManager.Fonts[FontIdentifier.Text], "Server game objects: " + Library.serverGameObjects.Count, new Vector2(0, 50), Color.Green, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, TextureManager.SpriteLayers[SpriteLayerIdentifier.UI]);
 
             spriteBatch.End();
         }

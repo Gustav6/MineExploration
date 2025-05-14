@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ServerToGame;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,40 +21,27 @@ namespace MineExploration
         public float SpriteLayer { get; protected set; } = TextureManager.SpriteLayers[SpriteLayerIdentifier.Default];
         #endregion
 
-        public GameObjectServerData ServerData { get; set; }
+        public ObjectType Type { get; protected set; }
+        public int ObjectIdentification { get; set; }
 
-        public TaskCompletionSource<bool> tcs = new();
-        private bool canRun = false;
+        public TaskCompletionSource<bool> serverSync = new();
 
-        public virtual async Task Start()
+        public async Task AwaitSeverSync()
         {
-            if (Library.localGameObjects.Contains(this))
-            {
-                await tcs.Task;
+            await serverSync.Task;
 
-                ServerHandler.SendMessage($"{(int)ServerCommands.Echo}:{(int)MessageType.NewGameObject}:{DataSerialized()}");
-            }
+            Start();
+        }
 
+        public virtual void Start()
+        {
             Origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
             Source = new Rectangle(0, 0, Texture.Width, Texture.Height);
-
-            canRun = true;
         }
 
         public virtual void Update(GameTime gameTime)
         {
-            if (!canRun)
-            {
-                return;
-            }
-        }
 
-        public virtual void RunOnDestroy() { }
-        public override void Destroy() { }
-
-        public string DataSerialized()
-        {
-            return JsonSerializer.Serialize(ServerData);
         }
 
         public virtual void Draw(SpriteBatch spriteBatch)

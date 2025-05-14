@@ -10,7 +10,8 @@
         "dependencies": {
           "Microsoft.Extensions.Hosting": "9.0.2",
           "MonoGame.Content.Builder.Task": "3.8.2.1105",
-          "MonoGame.Framework.DesktopGL": "3.8.2.1105"
+          "MonoGame.Framework.DesktopGL": "3.8.2.1105",
+          "ServerToGame": "1.0.0"
         },
         "runtime": {
           "MineExploration.dll": {}
@@ -513,7 +514,15 @@
           }
         }
       },
-      "System.ValueTuple/4.5.0": {}
+      "System.ValueTuple/4.5.0": {},
+      "ServerToGame/1.0.0": {
+        "runtime": {
+          "ServerToGame.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
     }
   },
   "libraries": {
@@ -787,6 +796,11 @@
       "sha512": "sha512-okurQJO6NRE/apDIP23ajJ0hpiNmJ+f0BwOlB/cSqTLQlw5upkf+5+96+iG2Jw40G1fCVCyPz/FhIABUjMR+RQ==",
       "path": "system.valuetuple/4.5.0",
       "hashPath": "system.valuetuple.4.5.0.nupkg.sha512"
+    },
+    "ServerToGame/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
     }
   }
 }

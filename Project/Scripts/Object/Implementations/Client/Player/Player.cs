@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ServerToGame;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,8 @@ namespace MineExploration
         public IDamageable.OnDeath RunOnDeath { get; set; }
         #endregion
 
+        private Vector2 previousInput = Vector2.Zero;
+
         public Player(Vector2 position)
         {
             Position = position;
@@ -28,12 +31,12 @@ namespace MineExploration
             Texture = TextureManager.Textures[TextureIdentifier.Player];
             SpriteLayer = TextureManager.SpriteLayers[SpriteLayerIdentifier.Player];
 
-            ServerData = new() { Position = position, Type = GameObjectType.Player};
+            Type = ObjectType.Player;
         }
 
-        public override async Task Start()
+        public override void Start()
         {
-            await base.Start();
+            base.Start();
 
             UnlockMovement();
             movementSpeed = PlayerStats.BaseMovementSpeed;
@@ -46,6 +49,12 @@ namespace MineExploration
             base.Update(gameTime);
 
             MoveDirection = new Vector2(KeyboardInput.Horizontal(), KeyboardInput.Vertical());
+
+            if (previousInput != MoveDirection)
+            {
+                MoveGameObject(gameTime);
+                previousInput = MoveDirection;
+            }
 
             if (MouseInput.HasBeenPressed(MouseKeys.Left))
             {

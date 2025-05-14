@@ -7,13 +7,39 @@ using ServerToGame;
 
 namespace TCPServer
 {
-    public class Object(int id, ObjectType type, Vec2 position, Vec2 size)
+    public class Object(int id, ObjectType type, Vec2 startingPosition, Vec2 size)
     {
-        public int Id { get => id; }
+        public int Identification { get => id; }
+        public string? clientsIdentification;
         public ObjectType Type { get => type; }
-        public Vec2 Position { get; set; } = position;
+
+        public Vec2 Position { get; set; } = startingPosition;
+        public Vec2 Velocity { get; set; } = new Vec2(0, 0);
+
         public Vec2 Size { get; set; } = size;
         public RectangleF BoundingBox => new(Position.X, Position.Y, Size.X, Size.Y);
+
+        public bool IsDirty { get; private set; } = true;
+
+        public void Move(Vec2 moveAmount)
+        {
+            Position.X += moveAmount.X;
+            Position.Y += moveAmount.Y;
+            IsDirty = true;
+        }
+
+        public void Update(float deltaTime)
+        {
+            if (Velocity != Vec2.Zero)
+            {
+                Move(new Vec2(Velocity.X * deltaTime, Velocity.Y * deltaTime));
+            }
+        }
+
+        public void ClearDirtyFlag()
+        {
+            IsDirty = false;
+        }
     }
 
     /// <summary>
@@ -35,11 +61,5 @@ namespace TCPServer
         {
             return !(Right <= other.Left || Left >= other.Right || Bottom <= other.Top || Top >= other.Bottom);
         }
-    }
-
-    public enum ObjectType
-    {
-        Player,
-        Enemy,
     }
 }

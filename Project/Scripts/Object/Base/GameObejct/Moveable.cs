@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ServerToGame;
 
 namespace MineExploration
 {
@@ -15,14 +16,7 @@ namespace MineExploration
 
         public float movementSpeed;
 
-        public override void Update(GameTime gameTime)
-        {
-            base.Update(gameTime);
-
-            MoveGameObject(gameTime);
-        }
-
-        private void MoveGameObject(GameTime gameTime)
+        protected void MoveGameObject(GameTime gameTime)
         {
             if (!CanMove || MoveDirection == Vector2.Zero)
             {
@@ -31,17 +25,18 @@ namespace MineExploration
 
             MoveDirection.Normalize();
 
-            SetPosition(Position + (MoveDirection * movementSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds));
-        }
-
-        public override void SetPosition(Vector2 position)
-        {
-            base.SetPosition(position);
-
-            if (Library.localGameObjects.Contains(this))
+            NetworkMessage moveRequest = new()
             {
-                ServerHandler.SendMessage($"{(int)ServerCommands.Echo}:{(int)MessageType.Move}:{DataSerialized()}");
-            }
+                Payload = new ObjectMoveRequest()
+                {
+                    Direction = new Vec2(MoveDirection.X, MoveDirection.Y),
+                    speed = movementSpeed,
+                    ObjectIdentification = ObjectIdentification
+                },
+                Type = MessageType.MoveGameObject
+            };
+
+            ServerManager.SendMessage(moveRequest);
         }
 
         public void LockMovement()

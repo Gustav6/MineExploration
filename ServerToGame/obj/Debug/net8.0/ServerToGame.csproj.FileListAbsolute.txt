@@ -1,0 +1,12 @@
+C:\Users\gusta\Documents\Github\MineExploration\ServerToGame\obj\Debug\net8.0\ServerToGame.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\gusta\Documents\Github\MineExploration\ServerToGame\obj\Debug\net8.0\ServerToGame.AssemblyInfoInputs.cache
+C:\Users\gusta\Documents\Github\MineExploration\ServerToGame\obj\Debug\net8.0\ServerToGame.AssemblyInfo.cs
+C:\Users\gusta\Documents\Github\MineExploration\ServerToGame\obj\Debug\net8.0\ServerToGame.csproj.CoreCompileInputs.cache
+C:\Users\gusta\Documents\Github\MineExploration\ServerToGame\obj\Debug\net8.0\ServerToGame.sourcelink.json
+C:\Users\gusta\Documents\Github\MineExploration\ServerToGame\bin\Debug\net8.0\ServerToGame.deps.json
+C:\Users\gusta\Documents\Github\MineExploration\ServerToGame\bin\Debug\net8.0\ServerToGame.dll
+C:\Users\gusta\Documents\Github\MineExploration\ServerToGame\bin\Debug\net8.0\ServerToGame.pdb
+C:\Users\gusta\Documents\Github\MineExploration\ServerToGame\obj\Debug\net8.0\ServerToGame.dll
+C:\Users\gusta\Documents\Github\MineExploration\ServerToGame\obj\Debug\net8.0\refint\ServerToGame.dll
+C:\Users\gusta\Documents\Github\MineExploration\ServerToGame\obj\Debug\net8.0\ServerToGame.pdb
+C:\Users\gusta\Documents\Github\MineExploration\ServerToGame\obj\Debug\net8.0\ref\ServerToGame.dll

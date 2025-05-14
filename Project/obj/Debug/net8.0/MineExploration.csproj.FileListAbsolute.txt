@@ -148,3 +148,5 @@ C:\Users\gustav.ekstrom1\Documents\Github\MineExploration\MineExploration\Projec
 C:\Users\gustav.ekstrom1\Documents\Github\MineExploration\MineExploration\Project\obj\Debug\net8.0\MineExploration.pdb
 C:\Users\gustav.ekstrom1\Documents\Github\MineExploration\MineExploration\Project\obj\Debug\net8.0\MineExploration.genruntimeconfig.cache
 C:\Users\gustav.ekstrom1\Documents\Github\MineExploration\MineExploration\Project\obj\Debug\net8.0\ref\MineExploration.dll
+C:\Users\gusta\Documents\Github\MineExploration\Project\bin\Debug\net8.0\ServerToGame.dll
+C:\Users\gusta\Documents\Github\MineExploration\Project\bin\Debug\net8.0\ServerToGame.pdb

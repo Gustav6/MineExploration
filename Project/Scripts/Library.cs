@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ServerToGame;
 
 namespace MineExploration
 {
@@ -12,49 +13,39 @@ namespace MineExploration
 
         public static Player playerInstance;
 
-        public static List<GameObject> localGameObjects = [], serverGameObjects = [];
-        public static Dictionary<int, GameObject> IdentificationToGameObject = [];
+        public static List<GameObject> localGameObjects = []; // Handles local update calls
+        public static Dictionary<int, GameObject> gameObjects = []; // Handles everything that the above does not
 
-        public static GameObject CreateLocalGameObject(GameObject gameObject)
+        public static Dictionary<string, GameObject> clientsIdentificationToGameObject = [];
+
+        public static GameObject CreateLocalGameObject(GameObject g)
         {
-            if (ServerHandler.Connected)
+            localGameObjects.Add(g);
+
+            if (ServerManager.Connected)
             {
-                ServerHandler.RequestIdentification(gameObject);
-            }
-            else
-            {
-                Task.Delay(1000).ContinueWith(_ =>
+                string tempIdentification = Guid.NewGuid().ToString();
+
+                NetworkMessage spawnRequest = new()
                 {
-                    if (ServerHandler.Connected)
+                    Payload = new ObjectSpawnRequest()
                     {
-                        ServerHandler.RequestIdentification(gameObject);
-                    }
-                });
+                        Position = new Vec2(g.Position.X, g.Position.Y),
+                        Size = new Vec2(g.Texture.Width, g.Texture.Height),
+                        Type = g.Type,
+                        TempIdentification = tempIdentification
+                    },
+                    Type = MessageType.ObjectSpawnRequest
+                };
+
+                ServerManager.SendMessage(spawnRequest);
+
+                clientsIdentificationToGameObject.Add(tempIdentification, g);
+
+                _ = g.AwaitSeverSync();
             }
 
-            localGameObjects.Add(gameObject);
-
-            _ = gameObject.Start();
-
-            return gameObject;
-        }
-
-        public static GameObject CreateServerGameObject(GameObject gameObject, int identification)
-        {
-            if (IdentificationToGameObject.ContainsKey(identification))
-            {
-                return null;
-            }
-
-            IdentificationToGameObject.TryAdd(identification, gameObject);
-
-            gameObject.ServerData.Identification = identification;
-
-            serverGameObjects.Add(gameObject);
-
-            _ = gameObject.Start();
-
-            return gameObject;
+            return g;
         }
     }
 }

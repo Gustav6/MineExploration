@@ -11,5 +11,13 @@ namespace ServerToGame
     {
         public float X { get; set; } = x;
         public float Y { get; set; } = y;
+
+        public static Vec2 Zero => new(0, 0);
+    }
+
+    public enum ObjectType
+    {
+        Player,
+        Enemy,
     }
 }

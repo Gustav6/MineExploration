@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ServerToGame;
 
 namespace MineExploration
 {
@@ -14,7 +15,7 @@ namespace MineExploration
     {
         public void LoadContent()
         {
-            _ = ServerHandler.TryToConnect("127.0.0.1", 13000, 1000);
+            _ = ServerManager.TryToConnect("127.0.0.1", 13000, 1000);
 
             Library.playerInstance = (Player)Library.CreateLocalGameObject(new Player(Vector2.Zero));
             Library.MainCamera.SetTarget(Library.playerInstance);
@@ -50,25 +51,12 @@ namespace MineExploration
             {
                 if (Library.localGameObjects[i].IsDestroyed)
                 {
-                    Library.localGameObjects[i].RunOnDestroy();
-                    Library.localGameObjects.RemoveAt(i);
+                    Library.localGameObjects.Remove(Library.localGameObjects[i]);
+
                     continue;
                 }
 
                 Library.localGameObjects[i].Update(gameTime);
-            }
-
-            for (int i = Library.serverGameObjects.Count - 1; i >= 0; i--)
-            {
-                if (Library.serverGameObjects[i].IsDestroyed)
-                {
-                    int identificationToDestroy = Library.serverGameObjects[i].ServerData.Identification;
-
-                    Library.serverGameObjects[i].RunOnDestroy();
-                    Library.serverGameObjects.RemoveAt(i);
-
-                    Library.IdentificationToGameObject.Remove(identificationToDestroy);
-                }
             }
         }
 
@@ -76,14 +64,9 @@ namespace MineExploration
         {
             MapManager.DrawActiveChunks(spriteBatch);
 
-            for (int i = 0; i < Library.localGameObjects.Count; i++)
+            foreach (GameObject gameObject in Library.gameObjects.Values)
             {
-                Library.localGameObjects[i].Draw(spriteBatch);
-            }
-
-            for (int i = 0; i < Library.serverGameObjects.Count; i++)
-            {
-                Library.serverGameObjects[i].Draw(spriteBatch);
+                gameObject.Draw(spriteBatch);
             }
         }
     }

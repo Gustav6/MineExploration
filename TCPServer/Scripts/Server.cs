@@ -1,7 +1,7 @@
 ﻿using System.Net.Sockets;
 using System.Net;
-using System.Text;
-using System.Text.Json;
+using ServerToGame;
+using System.Collections.Concurrent;
 
 namespace TCPServer
 {
@@ -12,7 +12,11 @@ namespace TCPServer
         private readonly int bufferSize = 1024;
         private TcpListener listener;
 
+        public const int tickRate = 30; // 30 ticks per second
+        public const float tickDelta = 1f / tickRate;
+        public const int tickDelay = 1000 / tickRate;
 
+        #region Start And Stop
         public Task Start(int port, IPAddress address)
         {
             listener = new TcpListener(address, port);
@@ -21,7 +25,7 @@ namespace TCPServer
 
             Log($"Started, port: [{port}], ip address: [{address}]", LogType.Server);
 
-            Task.Run(AcceptClients);
+            Task.Run(ListenForClients);
             return Task.CompletedTask;
         }
 
@@ -37,8 +41,45 @@ namespace TCPServer
 
             ClientManager.clients.Clear();
         }
+        #endregion
 
-        private async Task AcceptClients()
+        public static void Tick()
+        {
+            MessageHandler.ProcessMessages();
+
+            ObjectManager.Update(tickDelta);
+
+            SendUpdatesToClients();
+        }
+
+        private static void SendUpdatesToClients()
+        {
+            foreach (var obj in ObjectManager.GetUpdatedObjects())
+            {
+                NetworkMessage updateMessage = new()
+                {
+                    Type = MessageType.UpdateObject,
+                    Payload = new ObjectUpdate()
+                    {
+                        ClientIdentification = obj.clientsIdentification,
+                        ObjectIdentification = obj.Identification,
+                        Position = obj.Position
+                    }
+                };
+
+                if (obj.clientsIdentification != null)
+                {
+                    obj.clientsIdentification = null;
+                }
+
+                Echo(updateMessage);
+            }
+
+            // Reset dirty flags AFTER updates are sent
+            ObjectManager.ClearDirtyFlags();
+        }
+
+        private async Task ListenForClients()
         {
             while (Active)
             {
@@ -47,133 +88,87 @@ namespace TCPServer
                 string clientIdentification = Guid.NewGuid().ToString(); // Give a client a unique id
                 Client client = ClientManager.AddClient(clientIdentification, tcpClient);
 
-                Log($"Client: [{clientIdentification}] has connected. Client count: [{ClientManager.clients.Count}]", LogType.Server);
+                _ = Task.Run(() => ListenForMessages(client));
 
-                _ = Task.Run(async () =>
-                {
-                    try
-                    {
-                        await HandleClient(client);
-                    }
-                    catch (Exception exception)
-                    {
-                        Log($"Exception: ({exception.Message}), orignates from: [{client.Identification}]", LogType.Error);
-                    }
-                    finally
-                    {
-                        ClientManager.RemoveClient(clientIdentification);
-                    }
-                });
+                Log($"Client: [{clientIdentification}] has connected. Client count: [{ClientManager.clients.Count}]", LogType.Server);
             }
         }
 
-        private async Task HandleClient(Client client)
+        private async Task ListenForMessages(Client client)
         {
             NetworkStream stream = client.TcpClient.GetStream();
             byte[] buffer = new byte[bufferSize];
 
-            while (client.IsConnected)
+            try
             {
-                int bytesRead = await stream.ReadAsync(buffer);
-
-                if (bytesRead == 0)
+                while (client.IsConnected)
                 {
-                    break; // Client disconnected
+                    int bytesRead = await stream.ReadAsync(buffer);
+
+                    if (bytesRead > 0)
+                    {
+                        byte[] messageData = buffer[..bytesRead];
+                        NetworkMessage message = NetworkMessage.FromBytes(messageData);
+                        MessageQueue.Enqueue(client, message);
+                    }
+                    else
+                    {
+                        break; // Client disconnected
+                    }
                 }
-
-                byte[] data = new byte[bytesRead];
-                Array.Copy(buffer, data, bytesRead);
-                PayloadHandler.HandlePayload(data, client);
-
-                /*
-                string messageReceived = Encoding.UTF8.GetString(buffer);
-                string serverResponse = string.Empty;
-
-                string[] dataReceived = messageReceived.Split(';');
-
-                foreach (string data in dataReceived)
-                {
-                    if (string.IsNullOrWhiteSpace(data))
-                    {
-                        continue;
-                    }
-
-                    string[] dataParts = data.Split(':');
-
-                    if (!int.TryParse(dataParts.First(), out int parsedCommand))
-                    {
-                        continue;
-                    }
-
-                    ServerCommands command = (ServerCommands)parsedCommand;
-
-                    ConsoleClientMessage($"Client: [{client.Identification}] sent command: [{command}]");
-
-                    switch (command)
-                    {
-                        case ServerCommands.FetchIdentification: // For this command index 1 should be the game objects *temp identification*
-
-                            int temp = NewGameObjectIdentification();
-                            serverResponse = $"{(int)MessageType.Identification}:{temp}:{dataParts[1]}";
-
-                            byte[] responseBytes = Encoding.UTF8.GetBytes(serverResponse);
-
-                            ClientManager.SendMessage(serverResponse, client);
-                            client.attachedIdentifications.Add(temp);
-
-                            ConsoleServerMessage($"Sent: [{serverResponse}] to client: [{client.Identification}]");
-
-                            break;
-                        case ServerCommands.ReleaseIdentification:
-
-                            ReleaseIdentification(int.Parse(dataParts[1]));
-                            gameObjects.Remove(int.Parse(dataParts[1]));
-
-                            break;
-                        case ServerCommands.Echo:
-
-                            serverResponse = string.Join(":", dataParts.Skip(1));
-
-                            ClientManager.Echo(serverResponse, client.TcpClient);
-
-                            ConsoleServerMessage($"Echoed: [{serverResponse}] sent from client: [{client.Identification}]");
-
-                            if (int.TryParse(dataParts[1], out int parsed))
-                            {
-                                MessageType dataSent = (MessageType)parsed;
-                                GameObjectServerData gameObjectData = JsonSerializer.Deserialize<GameObjectServerData>(string.Join(":", dataParts.Skip(2)));
-
-                                if (gameObjectData != null)
-                                {
-                                    gameObjects[gameObjectData.Identification] = gameObjectData;
-                                }
-                            }
-
-                            break;
-                        case ServerCommands.FetchGameData:
-
-                            foreach (int serverIdentification in gameObjects.Keys)
-                            {
-                                if (client.attachedIdentifications.Contains(serverIdentification))
-                                {
-                                    continue;
-                                }
-
-                                serverResponse += $"{(int)MessageType.NewGameObject}:{gameObjects[serverIdentification]};";
-                            }
-
-                            ClientManager.SendMessage(serverResponse, client);
-
-                            ConsoleServerMessage($"Sent: [{serverResponse}] to client: [{client.Identification}]");
-                            break;
-                        default:
-                            ConsoleErrorMessage($"Unknown command: [{command}] sent from: [{client.Identification}]");
-                            break;
-                    }
-                }*/
+            }
+            catch (Exception exception)
+            {
+                Log($"Exception: ({exception.Message}), originates from: [{client.Identification}]", LogType.Error);
+            }
+            finally
+            {
+                ClientManager.RemoveClient(client.Identification);
             }
         }
 
+        #region Server message methods
+        /// <summary>
+        /// Broadcasts a message to all connected clients.
+        /// </summary>
+        public static void Echo(NetworkMessage message, Client? sender = null)
+        {
+            foreach (Client client in ClientManager.clients.Values)
+            {
+                if (sender != null && client.TcpClient == sender.Value.TcpClient)
+                {
+                    continue;
+                }
+
+                SendMessage(message, client);
+            }
+        }
+
+        /// <summary>
+        /// Sends a message to a specific client.
+        /// </summary>
+        public static void SendMessage(NetworkMessage message, Client client)
+        {
+            if (client.TcpClient == null)
+            {
+                return;
+            }
+
+            NetworkStream stream = client.TcpClient.GetStream();
+
+            if (!stream.CanWrite)
+            {
+                return;
+            }
+
+            Log($"Sent: [{message.Type}], to: [{client.Identification}]", LogType.Server);
+
+            stream.Write(message.ToBytes());
+            stream.FlushAsync();
+        }
+        #endregion
+
+        #region Log messages on server
         public static void Log(string message, LogType logType)
         {
             Console.Write($"[{DateTime.Now:HH:mm:ss}]");
@@ -193,9 +188,10 @@ namespace TCPServer
                     break;
             }
 
-            Console.WriteLine($"[{logType}] {message}");
+            Console.WriteLine($"[{logType.ToString().ToUpper()}] {message}");
             Console.ForegroundColor = ConsoleColor.White;
         }
+        #endregion
     }
 
     public enum LogType

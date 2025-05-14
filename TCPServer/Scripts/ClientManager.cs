@@ -60,46 +60,6 @@ namespace TCPServer
                 return null;
             }
         }
-
-        /// <summary>
-        /// Broadcasts a message to all connected clients.
-        /// </summary>
-        public static void Echo(string message, TcpClient? sender = null)
-        {
-            lock (_lock)
-            {
-                foreach (var pair in clients)
-                {
-                    if (sender != null && pair.Value.TcpClient == sender)
-                    {
-                        continue;
-                    }
-
-                    SendMessage(message, pair.Value);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Sends a message to a specific client.
-        /// </summary>
-        public static void SendMessage(string message, Client clientInfo)
-        {
-            if (clientInfo.TcpClient == null)
-            {
-                return;
-            }
-
-            NetworkStream stream = clientInfo.TcpClient.GetStream();
-
-            if (!stream.CanWrite)
-            {
-                return;
-            }
-
-            stream.Write(Encoding.UTF8.GetBytes(message + ";"));
-            stream.FlushAsync();
-        }
     }
 
     public struct Client(string clientIdentification, TcpClient client)

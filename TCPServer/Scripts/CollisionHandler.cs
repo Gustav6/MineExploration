@@ -8,21 +8,9 @@ namespace TCPServer
 {
     public class CollisionHandler
     {
-        public static IEnumerable<Object> GetCollisions(Object obj)
-        {
-            foreach (Object other in ObjectHandler.GetGameObjects())
-            {
-                if (other.Id == obj.Id)
-                {
-                    continue;
-                }
+        //public static IEnumerable<Object> GetCollisions(Object obj)
+        //{
 
-                if (obj.BoundingBox.Intersects(other.BoundingBox))
-                {
-                    yield return other;
-                }
-            }
-        }
-
+        //}
     }
 }

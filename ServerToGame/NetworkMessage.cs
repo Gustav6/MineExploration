@@ -7,7 +7,7 @@ namespace ServerToGame
     /// </summary>
     public class NetworkMessage
     {
-        public MessageType Type { get; set; }
+        public required MessageType Type { get; set; }
         public required MessagePayload Payload { get; set; }
 
         public byte[] ToBytes()
@@ -32,7 +32,7 @@ namespace ServerToGame
             var length = reader.ReadInt32();
             var payloadData = reader.ReadBytes(length);
 
-            var payload = PayloadRegistry.CreatePayload(type);
+            var payload = PayloadRegistry.FetchPayload(type);
             payload.Deserialize(payloadData);
 
             return new NetworkMessage { Type = type, Payload = payload };
@@ -41,9 +41,10 @@ namespace ServerToGame
 
     public enum MessageType
     {
-        CreateGameObject,
-        DestroyGameObject,
-        UpdateGameObject,
+        ObjectSpawnRequest,
+        DestroyObject,
+        UpdateObject,
+        MoveGameObject,
         FetchGameData,
         ClientDisconnect,
         ClientConnect,
