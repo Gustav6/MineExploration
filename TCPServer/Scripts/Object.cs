@@ -10,11 +10,10 @@ namespace TCPServer
     public class Object(int id, ObjectType type, Vec2 startingPosition, Vec2 size)
     {
         public int Identification { get => id; }
-        public string? clientsIdentification;
         public ObjectType Type { get => type; }
 
         public Vec2 Position { get; set; } = startingPosition;
-        public Vec2 Velocity { get; set; } = new Vec2(0, 0);
+        public Vec2 Velocity { get; set; } = new(0, 0);
 
         public Vec2 Size { get; set; } = size;
         public RectangleF BoundingBox => new(Position.X, Position.Y, Size.X, Size.Y);
@@ -30,7 +29,7 @@ namespace TCPServer
 
         public void Update(float deltaTime)
         {
-            if (Velocity != Vec2.Zero)
+            if (Velocity.X != 0 || Velocity.Y != 0)
             {
                 Move(new Vec2(Velocity.X * deltaTime, Velocity.Y * deltaTime));
             }
@@ -57,7 +56,7 @@ namespace TCPServer
         public readonly float Top => Y;
         public readonly float Bottom => Y + Height;
 
-        public bool Intersects(RectangleF other)
+        public readonly bool Intersects(RectangleF other)
         {
             return !(Right <= other.Left || Left >= other.Right || Bottom <= other.Top || Top >= other.Bottom);
         }

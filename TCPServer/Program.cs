@@ -10,7 +10,7 @@ class Program
         Console.Title = "TCP Server";
 
         PayloadRegistry.Register(MessageType.ObjectSpawnRequest, () => new ObjectSpawnRequest());
-        PayloadRegistry.Register(MessageType.ObjectSpawnResponse, () => new ObjectSpawnResponse());
+        PayloadRegistry.Register(MessageType.AssignServerIdentification, () => new AssignServerIdentification());
         PayloadRegistry.Register(MessageType.MoveGameObject, () => new ObjectMoveRequest());
         PayloadRegistry.Register(MessageType.UpdateObject, () => new ObjectUpdate());
 

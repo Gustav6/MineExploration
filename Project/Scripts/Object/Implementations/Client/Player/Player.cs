@@ -38,7 +38,6 @@ namespace MineExploration
         {
             base.Start();
 
-            UnlockMovement();
             movementSpeed = PlayerStats.BaseMovementSpeed;
             MaxHealth = PlayerStats.MaxHealth;
             Health = MaxHealth;
@@ -50,11 +49,7 @@ namespace MineExploration
 
             MoveDirection = new Vector2(KeyboardInput.Horizontal(), KeyboardInput.Vertical());
 
-            if (previousInput != MoveDirection)
-            {
-                MoveGameObject(gameTime);
-                previousInput = MoveDirection;
-            }
+            SendMoveDirection();
 
             if (MouseInput.HasBeenPressed(MouseKeys.Left))
             {

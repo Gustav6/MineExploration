@@ -75,14 +75,21 @@ namespace TCPServer
 
         private static void HandleSpawnRequest(ObjectSpawnRequest request, Client client)
         {
-            Object obj = new(ObjectManager.GetObjectIdentification(), request.Type, request.Position, request.Size)
-            {
-                clientsIdentification = request.TempIdentification
-            };
+            Object obj = new(ObjectManager.GetObjectIdentification(), request.Type, request.Position, request.Size);
 
             ObjectManager.Add(obj);
 
             client.attachedIdentifications.Add(obj.Identification);
+
+            Server.SendMessage(new NetworkMessage()
+            {
+                Type = MessageType.AssignServerIdentification,
+                Payload = new AssignServerIdentification()
+                {
+                    ObjectIdentification = obj.Identification,
+                    LocalIdentification = request.LocalIdentification
+                }
+            }, client);
         }
 
         private static void HandleDestroyRequest(DestroyObject request)
@@ -96,7 +103,11 @@ namespace TCPServer
 
             if (obj != null)
             {
-                obj.Velocity = new Vec2(request.Direction.X * request.speed, request.Direction.Y * request.speed);
+                Vec2 velocity = new(request.Direction.X * request.speed, request.Direction.Y * request.speed);
+
+                obj.Velocity = velocity;
+
+                Server.Log($"Received direction: [X: {request.Direction.X}; Y: {request.Direction.Y}]", LogType.Server);
             }
         }
     }

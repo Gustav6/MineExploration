@@ -10,3 +10,15 @@ C:\Users\gusta\Documents\Github\MineExploration\ServerToGame\obj\Debug\net8.0\Se
 C:\Users\gusta\Documents\Github\MineExploration\ServerToGame\obj\Debug\net8.0\refint\ServerToGame.dll
 C:\Users\gusta\Documents\Github\MineExploration\ServerToGame\obj\Debug\net8.0\ServerToGame.pdb
 C:\Users\gusta\Documents\Github\MineExploration\ServerToGame\obj\Debug\net8.0\ref\ServerToGame.dll
+C:\Users\gustav.ekstrom1\Documents\Github\MineExploration\MineExploration\ServerToGame\bin\Debug\net8.0\ServerToGame.deps.json
+C:\Users\gustav.ekstrom1\Documents\Github\MineExploration\MineExploration\ServerToGame\bin\Debug\net8.0\ServerToGame.dll
+C:\Users\gustav.ekstrom1\Documents\Github\MineExploration\MineExploration\ServerToGame\bin\Debug\net8.0\ServerToGame.pdb
+C:\Users\gustav.ekstrom1\Documents\Github\MineExploration\MineExploration\ServerToGame\obj\Debug\net8.0\ServerToGame.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\gustav.ekstrom1\Documents\Github\MineExploration\MineExploration\ServerToGame\obj\Debug\net8.0\ServerToGame.AssemblyInfoInputs.cache
+C:\Users\gustav.ekstrom1\Documents\Github\MineExploration\MineExploration\ServerToGame\obj\Debug\net8.0\ServerToGame.AssemblyInfo.cs
+C:\Users\gustav.ekstrom1\Documents\Github\MineExploration\MineExploration\ServerToGame\obj\Debug\net8.0\ServerToGame.csproj.CoreCompileInputs.cache
+C:\Users\gustav.ekstrom1\Documents\Github\MineExploration\MineExploration\ServerToGame\obj\Debug\net8.0\ServerToGame.sourcelink.json
+C:\Users\gustav.ekstrom1\Documents\Github\MineExploration\MineExploration\ServerToGame\obj\Debug\net8.0\ServerToGame.dll
+C:\Users\gustav.ekstrom1\Documents\Github\MineExploration\MineExploration\ServerToGame\obj\Debug\net8.0\refint\ServerToGame.dll
+C:\Users\gustav.ekstrom1\Documents\Github\MineExploration\MineExploration\ServerToGame\obj\Debug\net8.0\ServerToGame.pdb
+C:\Users\gustav.ekstrom1\Documents\Github\MineExploration\MineExploration\ServerToGame\obj\Debug\net8.0\ref\ServerToGame.dll

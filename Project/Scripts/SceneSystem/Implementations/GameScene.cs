@@ -13,9 +13,9 @@ namespace MineExploration
 {
     internal class GameScene : IScene
     {
-        public void LoadContent()
+        public async void LoadContent()
         {
-            _ = ServerManager.TryToConnect("127.0.0.1", 13000, 1000);
+            await ServerManager.TryToConnect("127.0.0.1", 13000, 1000);
 
             Library.playerInstance = (Player)Library.CreateLocalGameObject(new Player(Vector2.Zero));
             Library.MainCamera.SetTarget(Library.playerInstance);

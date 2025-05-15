@@ -16,7 +16,7 @@ namespace MineExploration
         public static List<GameObject> localGameObjects = []; // Handles local update calls
         public static Dictionary<int, GameObject> gameObjects = []; // Handles everything that the above does not
 
-        public static Dictionary<string, GameObject> clientsIdentificationToGameObject = [];
+        public static Dictionary<string, GameObject> localIdentificationToGameObject = [];
 
         public static GameObject CreateLocalGameObject(GameObject g)
         {
@@ -33,14 +33,14 @@ namespace MineExploration
                         Position = new Vec2(g.Position.X, g.Position.Y),
                         Size = new Vec2(g.Texture.Width, g.Texture.Height),
                         Type = g.Type,
-                        TempIdentification = tempIdentification
+                        LocalIdentification = tempIdentification
                     },
                     Type = MessageType.ObjectSpawnRequest
                 };
 
                 ServerManager.SendMessage(spawnRequest);
 
-                clientsIdentificationToGameObject.Add(tempIdentification, g);
+                localIdentificationToGameObject.Add(tempIdentification, g);
 
                 _ = g.AwaitSeverSync();
             }

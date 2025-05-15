@@ -10,20 +10,24 @@ namespace MineExploration
 {
     public abstract class Moveable : GameObject
     {
-        public bool CanMove { get; private set; }
-        public Vector2 MoveDirection {  get; protected set; }
+        public bool CanMove { get; private set; } = true;
+        public Vector2 MoveDirection { get; protected set; } = Vector2.Zero;
+        private Vector2 previousMoveDirection = Vector2.Zero;
         protected bool canFlipSprite = true;
 
         public float movementSpeed;
 
-        protected void MoveGameObject(GameTime gameTime)
+        protected void SendMoveDirection()
         {
-            if (!CanMove || MoveDirection == Vector2.Zero)
+            if (!CanMove || MoveDirection == previousMoveDirection)
             {
                 return;
             }
 
-            MoveDirection.Normalize();
+            if (MoveDirection != Vector2.Zero)
+            {
+                MoveDirection.Normalize();
+            }
 
             NetworkMessage moveRequest = new()
             {
@@ -37,6 +41,18 @@ namespace MineExploration
             };
 
             ServerManager.SendMessage(moveRequest);
+
+            previousMoveDirection = MoveDirection;
+        }
+
+        protected void SimulateMovement(GameTime gameTime)
+        {
+            if (MoveDirection != Vector2.Zero)
+            {
+                MoveDirection.Normalize();
+            }
+
+            Position += MoveDirection * movementSpeed * (float)gameTime.ElapsedGameTime.TotalMilliseconds;
         }
 
         public void LockMovement()

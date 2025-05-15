@@ -39,6 +39,7 @@ namespace ServerToGame
         }
     }
 
+    #region Move Request
     public class ObjectMoveRequest : MessagePayload
     {
         public Vec2 Direction = new(0, 0);
@@ -68,6 +69,7 @@ namespace ServerToGame
             ObjectIdentification = reader.ReadInt32();
         }
     }
+    #endregion
 
     public class GameData : MessagePayload
     {
@@ -86,12 +88,40 @@ namespace ServerToGame
         }
     }
 
+    #region Assign objcets identification
+    public class AssignServerIdentification : MessagePayload
+    {
+        public string LocalIdentification = String.Empty;
+        public int ObjectIdentification;
+
+        public override byte[] Serialize()
+        {
+            using var ms = new MemoryStream();
+            using var writer = new BinaryWriter(ms);
+
+            writer.Write(ObjectIdentification);
+            writer.Write(LocalIdentification);
+
+            return ms.ToArray();
+        }
+
+        public override void Deserialize(byte[] data)
+        {
+            using var ms = new MemoryStream(data);
+            using var reader = new BinaryReader(ms);
+
+            ObjectIdentification = reader.ReadInt32();
+            LocalIdentification = reader.ReadString();
+        }
+    }
+    #endregion
+
+    #region Update object
     public class ObjectUpdate : MessagePayload
     {
-        public string? ClientIdentification = string.Empty;
-
+        public ObjectType Type;
         public int ObjectIdentification;
-        public Vec2 Position;
+        public Vec2 Position = new(0, 0);
 
         public override byte[] Serialize()
         {
@@ -101,11 +131,7 @@ namespace ServerToGame
             writer.Write(ObjectIdentification);
             writer.Write(Position.X);
             writer.Write(Position.Y);
-
-            if (ClientIdentification != null)
-            {
-                writer.Write(ClientIdentification);
-            }
+            writer.Write((int)Type);
 
             return ms.ToArray();
         }
@@ -117,9 +143,10 @@ namespace ServerToGame
 
             ObjectIdentification = reader.ReadInt32();
             Position = new Vec2(reader.ReadSingle(), reader.ReadSingle());
-            ClientIdentification = reader.ReadString();
+            Type = (ObjectType)reader.ReadSingle();
         }
     }
+    #endregion
 
     #region Destroy object 
     public class DestroyObject : MessagePayload
@@ -146,12 +173,12 @@ namespace ServerToGame
     }
     #endregion
 
-    #region Spawn request & repsone
+    #region Spawn Object
     public class ObjectSpawnRequest : MessagePayload
     {
         public ObjectType Type;
         public Vec2 Size = new(0, 0), Position = new(0, 0);
-        public string TempIdentification = string.Empty;
+        public string LocalIdentification = string.Empty;
         public int ObjectIdentification;
 
         public override byte[] Serialize()
@@ -164,7 +191,7 @@ namespace ServerToGame
             writer.Write(Position.Y);
             writer.Write(Size.X);
             writer.Write(Size.Y);
-            writer.Write(TempIdentification);
+            writer.Write(LocalIdentification);
             writer.Write(ObjectIdentification);
 
             return ms.ToArray();
@@ -178,7 +205,7 @@ namespace ServerToGame
             Type = (ObjectType)reader.ReadSingle();
             Position = new Vec2(reader.ReadSingle(), reader.ReadSingle());
             Size = new Vec2(reader.ReadSingle(), reader.ReadSingle());
-            TempIdentification = reader.ReadString();
+            LocalIdentification = reader.ReadString();
             ObjectIdentification = reader.ReadInt32();
         }
     }

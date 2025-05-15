@@ -14,34 +14,21 @@ namespace MineExploration
         {
             switch (message.Type)
             {
-                case MessageType.ObjectSpawnRequest:
-                    if (message.Payload is not ObjectSpawnRequest req)
+                case MessageType.AssignServerIdentification:
+                    if (message.Payload is not AssignServerIdentification ser)
                     {
                         return;
                     }
 
-                    GameObject serverObject = null;
-                    switch (req.Type)
+                    if (Library.localIdentificationToGameObject.TryGetValue(ser.LocalIdentification, out GameObject l))
                     {
-                        case ObjectType.Player:
-                            serverObject = new Player(new Vector2(req.Position.X, req.Position.Y));
-                            break;
-                        case ObjectType.Enemy:
-                            //serverObject = new Enemy(new Vector2(req.Position.X, req.Position.Y));
-                            break;
-                        default:
-                            break;
+                        l.ObjectIdentification = ser.ObjectIdentification;
+                        l.serverSync.SetResult(true);
+
+                        Library.gameObjects.Add(l.ObjectIdentification, l);
+
+                        Library.localIdentificationToGameObject.Remove(ser.LocalIdentification);
                     }
-
-                    if (serverObject == null)
-                    {
-                        return;
-                    }
-
-                    serverObject.ObjectIdentification = req.ObjectIdentification;
-                    serverObject.serverSync.SetResult(true);
-
-                    Library.gameObjects.Add(serverObject.ObjectIdentification, serverObject);
 
                     break;
                 case MessageType.DestroyObject:
@@ -62,19 +49,38 @@ namespace MineExploration
                         return;
                     }
 
-                    if (upd.ClientIdentification != null)
+                    // Check if the object already exists
+                    if (Library.gameObjects.TryGetValue(upd.ObjectIdentification, out GameObject g))
                     {
-                        GameObject localObject = Library.clientsIdentificationToGameObject[upd.ClientIdentification];
-
-                        localObject.ObjectIdentification = upd.ObjectIdentification;
-                        localObject.serverSync.SetResult(true);
-
-                        Library.gameObjects.Add(localObject.ObjectIdentification, localObject);
-
-                        Library.clientsIdentificationToGameObject.Remove(upd.ClientIdentification);
+                        // Update gameobjects
+                        g.SetPosition(new Vector2(upd.Position.X, upd.Position.Y));
                     }
+                    else
+                    {
+                        GameObject serverObject = null;
 
-                    Library.gameObjects[upd.ObjectIdentification].SetPosition(new Vector2(upd.Position.X, upd.Position.Y));
+                        switch (upd.Type)
+                        {
+                            case ObjectType.Player:
+                                serverObject = new Player(new Vector2(upd.Position.X, upd.Position.Y));
+                                break;
+                            case ObjectType.Enemy:
+                                //serverObject = new Enemy(new Vector2(req.Position.X, req.Position.Y));
+                                break;
+                            default:
+                                break;
+                        }
+
+                        if (serverObject == null)
+                        {
+                            return;
+                        }
+
+                        serverObject.ObjectIdentification = upd.ObjectIdentification;
+                        serverObject.serverSync.SetResult(true);
+
+                        Library.gameObjects.Add(serverObject.ObjectIdentification, serverObject);
+                    }
 
                     break;
                 default:

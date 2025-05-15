@@ -42,6 +42,7 @@ namespace ServerToGame
     public enum MessageType
     {
         ObjectSpawnRequest,
+        AssignServerIdentification,
         DestroyObject,
         UpdateObject,
         MoveGameObject,

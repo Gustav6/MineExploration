@@ -2,6 +2,7 @@
 using System.Net;
 using ServerToGame;
 using System.Collections.Concurrent;
+using System.Linq;
 
 namespace TCPServer
 {
@@ -12,7 +13,7 @@ namespace TCPServer
         private readonly int bufferSize = 1024;
         private TcpListener listener;
 
-        public const int tickRate = 30; // 30 ticks per second
+        public const int tickRate = 60; // 60 ticks per second
         public const float tickDelta = 1f / tickRate;
         public const int tickDelay = 1000 / tickRate;
 
@@ -54,23 +55,23 @@ namespace TCPServer
 
         private static void SendUpdatesToClients()
         {
-            foreach (var obj in ObjectManager.GetUpdatedObjects())
+            if (!ObjectManager.GetUpdatedObjects().Any())
+            {
+                return;
+            }
+
+            foreach (Object obj in ObjectManager.GetUpdatedObjects())
             {
                 NetworkMessage updateMessage = new()
                 {
                     Type = MessageType.UpdateObject,
                     Payload = new ObjectUpdate()
                     {
-                        ClientIdentification = obj.clientsIdentification,
                         ObjectIdentification = obj.Identification,
-                        Position = obj.Position
+                        Position = obj.Position,
+                        Type = obj.Type,
                     }
                 };
-
-                if (obj.clientsIdentification != null)
-                {
-                    obj.clientsIdentification = null;
-                }
 
                 Echo(updateMessage);
             }
